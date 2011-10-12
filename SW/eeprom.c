@@ -140,24 +140,19 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 {
 	static uint8_t point = 0;
 	static uint8_t points = 0;
-	static temp_point *eetable_ptr EEMEM;
+	static uint16_t eetable_ptr;
 	
 	if(table_number > 9)
 		return(0);
 	if(points == 0)
 	{
-		usb_putchar('a');
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 		{		
 			eeprom_busy_wait();
 			points = eeprom_read_byte((uint8_t*)&(EEtable[table_number].PTS));
 			eeprom_busy_wait();
-			eetable_ptr = (temp_point*)eeprom_read_word((uint16_t*)&(EEtable[table_number].EEaddress));
+			eetable_ptr = eeprom_read_word((uint16_t*)&(EEtable[table_number].EEaddress));
 		}
-		usb_printnum(points);
-		usb_putchar(' ');
-		usb_printnum((uint16_t)eetable_ptr);
-		usb_newline();
 		next_time = 0;
 		next_temp = 25<<2;
 		SR = 0;
@@ -174,20 +169,14 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 			next_temp = 25<<2;
 			return(0);
 		}
-		usb_putchar('b');
 		last_time = next_time;
 		last_temp = next_temp;
 		eeprom_busy_wait();
-		next_time = eeprom_read_word(&(eetable_ptr[point].time));
-		usb_printnum(next_time);
-		usb_putchar(' ');
+		next_time = eeprom_read_word((uint16_t*)eetable_ptr);
 		eeprom_busy_wait();
-		next_temp = eeprom_read_word(&(eetable_ptr[point].temp));
-		usb_printnum(next_temp);
-		usb_putchar(' ');
-		SR = (((next_temp - last_temp)<<7)/(next_time - last_time));
-		usb_printnum(SR);
-		usb_newline();
+		next_temp = eeprom_read_word((uint16_t*)(eetable_ptr + 2));
+		SR = (int16_t)(((int32_t)(next_temp - last_temp)<<7)/(next_time - last_time));
+		eetable_ptr += 4;
 		point++;
 		if(Status_com & DEBUG)
 		{
@@ -198,8 +187,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 			usb_newline();
 		}
 	}
-	usb_putchar('c');
 	
-	return((uint16_t)(((uint32_t)(time-last_time) * SR)>>7) + last_temp);
+	return((uint16_t)(((int32_t)(time-last_time) * SR)>>7) + last_temp);
 	
 }
