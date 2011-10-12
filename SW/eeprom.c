@@ -1,10 +1,3 @@
-/*
- * eeprom.c
- *
- *  Created on: 2009-09-03
- *      Author: liku
- */
-
 #include <stdint.h>
 #include <util/atomic.h>
 #include <avr/eeprom.h>
