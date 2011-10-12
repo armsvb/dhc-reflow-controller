@@ -1,0 +1,259 @@
+# EESchema Netlist Version 1.1 created  4. 10. 2011 22:29:03
+(
+ ( /4D7F75D9 C1V5 C8 100u/25V
+  ( 1 N-000023 )
+  ( 2 N-000020 )
+ )
+ ( /4D7F75EC SM0805 C11 100n
+  ( 1 N-000023 )
+  ( 2 N-000020 )
+ )
+ ( /4D7F760B SM0805 C14 100n
+  ( 1 N-000021 )
+  ( 2 N-000020 )
+ )
+ ( /4D7F7641 C1V5 C17 100u/25V
+  ( 1 N-000021 )
+  ( 2 N-000020 )
+ )
+ ( /4D7F7614 C1V5 C19 10u/25V
+  ( 1 N-000022 )
+  ( 2 N-000020 )
+ )
+ ( /4D7F7624 SM0805 C21 100n
+  ( 1 N-000022 )
+  ( 2 N-000020 )
+ )
+ ( /4D7F766F SM0805 C22 100n
+  ( 1 N-000027 )
+  ( 2 N-000020 )
+ )
+ ( /4D7F7676 C1V5 C23 100u/25V
+  ( 1 N-000027 )
+  ( 2 N-000020 )
+ )
+ ( /4D8214C7 sm1206 C24 10n
+  ( 1 /LH1 )
+  ( 2 N-000005 )
+ )
+ ( /4D82161E sm1206 C25 10n
+  ( 1 N-000001 )
+  ( 2 /LH2 )
+ )
+ ( /4D7F7223 BRIDGE_SMD D1 BRIDGE
+  ( 1 N-000020 )
+  ( 2 N-000024 )
+  ( 3 N-000023 )
+  ( 4 N-000025 )
+ )
+ ( /4D8290BD sm1206pol D3 1N4001
+  ( 1 N-000008 )
+  ( 2 N-000021 )
+ )
+ ( /4D7F7CFE bornier2 P1 CONN_2
+  ( 1 /L1 )
+  ( 2 N-000026 )
+ )
+ ( /4D8218AA bornier2 P4 CONN_2
+  ( 1 N-000021 )
+  ( 2 N-000008 )
+ )
+ ( /4D821504 bornier2 P5 CONN_2
+  ( 1 /LH1 )
+  ( 2 /LH2 )
+ )
+ ( /4D847089 PIN_ARRAY_5x2 P8 CONN_5X2
+  ( 1 N-000024 )
+  ( 2 N-000020 )
+  ( 3 N-000006 )
+  ( 4 N-000020 )
+  ( 5 N-000007 )
+  ( 6 N-000020 )
+  ( 7 N-000027 )
+  ( 8 N-000020 )
+  ( 9 N-000027 )
+  ( 10 N-000009 )
+ )
+ ( /4D82190B SOT23GDS Q2 MOS_N
+  ( D N-000008 )
+  ( G N-000009 )
+  ( S N-000020 )
+ )
+ ( /4D7F764C R1 R7 R
+  ( 1 N-000022 )
+  ( 2 N-000021 )
+ )
+ ( /4D82145C SM0805 R8 330
+  ( 1 N-000016 )
+  ( 2 N-000027 )
+ )
+ ( /4D821467 SM0805 R9 330
+  ( 1 N-000012 )
+  ( 2 N-000027 )
+ )
+ ( /4D82149E R1 R10 360
+  ( 1 N-000019 )
+  ( 2 /L1 )
+ )
+ ( /4D821661 R1 R11 360
+  ( 1 /L1 )
+  ( 2 N-000014 )
+ )
+ ( /4D8214E0 R1 R12 330
+  ( 1 /LH1 )
+  ( 2 N-000004 )
+ )
+ ( /4D821602 R1 R13 330
+  ( 1 /LH2 )
+  ( 2 N-000003 )
+ )
+ ( /4D8214BD MELF0207 R15 39
+  ( 1 N-000005 )
+  ( 2 /L1 )
+ )
+ ( /4D82161F MELF0207 R16 39
+  ( 1 /L1 )
+  ( 2 N-000001 )
+ )
+ ( /4D7F720A TR_EI38X13.6 T1 TRANSFO
+  ( 1 N-000026 )
+  ( 2 /L1 )
+  ( 3 N-000025 )
+  ( 4 N-000024 )
+ )
+ ( /4D7F71F2 DPAK2 U2 7812
+  ( 1 N-000023 )
+  ( 2 N-000020 )
+  ( 3 N-000021 )
+ )
+ ( /4D7F71E5 TO-263 U3 7805
+  ( 1 N-000022 )
+  ( 2 N-000020 )
+  ( 3 N-000027 )
+ )
+ ( /4D7F70F6 opto_triac_6pin U4 OPTO-TRIAC
+  ( 1 N-000016 )
+  ( 2 N-000007 )
+  ( 3 ? )
+  ( 4 N-000004 )
+  ( 5 ? )
+  ( 6 N-000019 )
+ )
+ ( /4D7F7100 opto_triac_6pin U5 OPTO-TRIAC
+  ( 1 N-000012 )
+  ( 2 N-000006 )
+  ( 3 ? )
+  ( 4 N-000014 )
+  ( 5 ? )
+  ( 6 N-000003 )
+ )
+ ( /4D7F7109 TO-220_Neutral123_Vertical_LargePads U6 TRIAC
+  ( 1 /LH1 )
+  ( 2 /L1 )
+  ( 3 N-000004 )
+ )
+ ( /4D7F7115 TO-220_Neutral123_Vertical_LargePads U7 TRIAC
+  ( 1 /LH2 )
+  ( 2 /L1 )
+  ( 3 N-000003 )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C8
+ CP*
+ SM*
+$endlist
+$component C11
+ SM*
+ C?
+ C1-1
+$endlist
+$component C14
+ SM*
+ C?
+ C1-1
+$endlist
+$component C17
+ CP*
+ SM*
+$endlist
+$component C19
+ CP*
+ SM*
+$endlist
+$component C21
+ SM*
+ C?
+ C1-1
+$endlist
+$component C22
+ SM*
+ C?
+ C1-1
+$endlist
+$component C23
+ CP*
+ SM*
+$endlist
+$component C24
+ SM*
+ C?
+ C1-1
+$endlist
+$component C25
+ SM*
+ C?
+ C1-1
+$endlist
+$component D3
+ D?
+ S*
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R10
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R13
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R15
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R16
+ R?
+ SM0603
+ SM0805
+$endlist
+$endfootprintlist
+}
