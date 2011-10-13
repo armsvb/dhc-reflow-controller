@@ -12,7 +12,7 @@
 //					GLOBAL VARIABLES
 //----------------------------------------------------------
 
-static uint8_t GLCD_buffer[98];
+static uint8_t GLCD_buffer[102];
 
 GLCD_POS GLCD_txt_pos;
 
@@ -188,9 +188,9 @@ void GLCD_DisplayPicture (PGM_P PictureData)
 void GLCD_UpdateDisplay(void)
 {
 	
-	uint8_t page=0;
+	uint8_t y=0;
 
-  	for (page = 0; page < 8; page++) 						/* loop on the 8 pages */
+  	for (y = 0; y < 64; y+=8) 						/* loop on the 8 pages */
    	{
 //  		bo9864_setxy(0,page<<3); 							/* Set the page on left controller*/
 //		bo9864_data_write(0,98,GLCD_buffer);
@@ -265,7 +265,7 @@ void GLCD_Putchar (uint8_t Char, FONT_DEF *toto, uint8_t overlay)
 	{
 /* test for carrier return -> automatic wrap?? */
 
-		if (GLCD_txt_pos.X > 128 - (toto->W)) 
+		if (GLCD_txt_pos.X > 101 - (toto->W)) 
 		{	
 			GLCD_txt_pos.X = 0;
 			GLCD_txt_pos.Y += ((toto->H) + dist);
@@ -331,7 +331,7 @@ void GLCD_Putchar (uint8_t Char, FONT_DEF *toto, uint8_t overlay)
 		for(page = 0; page < ((toto->H)/5 + 1); page++)
 		{
 			y=(GLCD_txt_pos.Y + (page<<3))/8;
-			if (shift < 98) 										/* Check if this is the last char of the line */
+			if (shift < 102) 										/* Check if this is the last char of the line */
 			{
 				for(CharColumn = 0; CharColumn < ((toto->W) +1); CharColumn++)
 				{
