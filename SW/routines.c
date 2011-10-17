@@ -147,6 +147,25 @@ void task_no_usb(void)
 		default:		break;
 	}
 
+//	GLCD_Clr();
+//	GLCD_Setxy(0,0);
+//	switch(Table)
+//	{
+//		case 0:	pprintf_P(Pbsn, LCD);
+//				break;
+//		case 1: pprintf_P(Pbfree, LCD);
+//				break;
+//		case 2: pprintf_P(Baking, LCD);
+//				break;
+//		case 3: pprintf_P(Drying, LCD);
+//				break;
+//		case 10: pprintf_P(Manual, LCD);
+//				break;
+//		default: pprintf_P(User, LCD);
+//				break;
+//	}
+//	pprintf_P(PSTR("/n"), LCD);
+
 	if(Status_task & TASK_GO)
 	{
 		if(PCINT1_count < Heat0)			//method 1 only
@@ -190,24 +209,7 @@ void task_no_usb(void)
 				}
 				usb_newline();
 			}
-			GLCD_Clr();
-			GLCD_Setxy(0,0);
-			switch(Table)
-			{
-				case 0:	pprintf_P(Pbsn, LCD);
-						break;
-				case 1: pprintf_P(Pbfree, LCD);
-						break;
-				case 2: pprintf_P(Baking, LCD);
-						break;
-				case 3: pprintf_P(Drying, LCD);
-						break;
-				case 11: pprintf_P(Manual, LCD);
-						break;
-				default: pprintf_P(User, LCD);
-						break;
-			}
-				pprintf_P(PSTR("/n"), LCD);
+
 		}
 	}
 	else

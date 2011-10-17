@@ -35,7 +35,7 @@ DATE		VERSION	REVISOR DESCRIPTION
 
 /* Local functions prototypes */
 
-
+#ifdef FONT_3X6
 /* System 3x6 (char #32 to #96) */
 static uint8_t FontSystem3x6[] PROGMEM = {
 0x00,0x00,0x00, /* Espace	0x20 */         
@@ -104,6 +104,9 @@ static uint8_t FontSystem3x6[] PROGMEM = {
 0x80,0x80,0x80, /* _ */                         
 0x04,0x08,0x00 /* `	0x60 */                 
 };
+
+FONT_DEF Font_System3x6  = {3, 6, 0x20, FontSystem3x6};
+#endif
 
 #ifdef FONT_5X8
 /* System 5x8 (char #32 to #128) */
@@ -360,7 +363,7 @@ FONT_DEF Font_Courrier8x12 = {8, 12, 0x2e, FontCourrier8x12};
 #endif
 
 /* Global variables */
-FONT_DEF Font_System3x6  = {3, 6, 0x20, FontSystem3x6};
+
 
 
 
