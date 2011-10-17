@@ -169,7 +169,7 @@ void task_no_usb(void)
 				temp_local = EE_get_temp(Time, Table);
 			Heat0 = pid_Controller(temp_local, Temp1, &PidData);
 			Heat1 = Heat0;
-			if(Is_device_enumerated())
+      if(Is_device_enumerated() && (Status_com & DEBUG))  //trying to revert back to working one...
 			{
 				pprintf_P(PSTR("D "), USB);
 				printnum(Time, USB);
