@@ -180,10 +180,10 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		point++;
 		if(Status_com & DEBUG)
 		{
-			usb_printf_P(PSTR("Setting: "));
-			usb_printnum(next_time);
+			pprintf_P(PSTR("Setting: "), USB);
+			printnum(next_time, USB);
 			usb_putchar('\t');
-			usb_printnum(next_temp>>2);
+			printnum(next_temp>>2, USB);
 			usb_newline();
 		}
 	}

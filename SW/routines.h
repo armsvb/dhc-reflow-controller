@@ -9,6 +9,8 @@
 // defines for Status_task
 #define TASK_GO			0x01
 #define TASK_MAN		0x02
+#define LCD				0x00
+#define USB				0x01
 
 extern uint8_t Status_task, Status_com;
 //extern uint16_t Temp1;
@@ -17,9 +19,9 @@ void task_init(void);
 
 void task(void);
 
-void usb_printnum(int16_t num);
+void printnum(int16_t num, uint8_t device);
 
-void usb_printf_P(PGM_P txt_P);
+void pprintf_P(PGM_P txt_P, uint8_t device);
 
 void usb_newline(void);
 

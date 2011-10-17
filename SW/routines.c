@@ -12,6 +12,7 @@
 #include "pwm.h"
 #include "usb.h"
 #include "pid.h"
+#include "glcd.h"
 #include "max6675.h"
 #include "encoder.h"
 #include "eeprom.h"
@@ -20,6 +21,16 @@
 #include "usb/usb_standard_request.h"
 #include "usb/wdt_drv.h"
 
+//=============================================
+//===				PGM constants			===
+//=============================================
+
+PGM_P Pbsn = "PbSn solder";
+PGM_P Pbfree = "Pb-free solder";
+PGM_P Baking = "Chip baking";
+PGM_P Drying = "Film drying";
+PGM_P User = "User profile";
+PGM_P Manual = "Manual ctrl ";
 
 uint8_t Status_com, Status_task;
 static uint8_t I;
@@ -33,7 +44,6 @@ volatile uint8_t PCINT1_count;
 static uint16_t Time;
 uint8_t Table;
 struct PID_DATA PidData;
-
 
 void task_no_usb(void);
 void task_with_usb(void);
@@ -159,22 +169,45 @@ void task_no_usb(void)
 				temp_local = EE_get_temp(Time, Table);
 			Heat0 = pid_Controller(temp_local, Temp1, &PidData);
 			Heat1 = Heat0;
-			if (Status_com & DEBUG)
-				usb_printf_P(PSTR("D "));
-				usb_printnum(Time);
+			if(Is_device_enumerated())
+			{
+				pprintf_P(PSTR("D "), USB);
+				printnum(Time, USB);
 				usb_putchar('\t');
-				usb_printnum(temp_local>>2);
+				printnum(temp_local>>2, USB);
 				usb_putchar('\t');
-				usb_printnum(Temp1>>2);
-				usb_putchar('\t');
-				usb_printnum(Heat0);
-				usb_putchar('\t');
-				usb_printnum(PidData.p_term);
-				usb_putchar('\t');
-				usb_printnum(PidData.i_term);
-				usb_putchar('\t');
-				usb_printnum(PidData.d_term);
+				printnum(Temp1>>2, USB);
+				if (Status_com & DEBUG)
+				{
+					usb_putchar('\t');
+					printnum(Heat0, USB);
+					usb_putchar('\t');
+					printnum(PidData.p_term, USB);
+					usb_putchar('\t');
+					printnum(PidData.i_term, USB);
+					usb_putchar('\t');
+					printnum(PidData.d_term, USB);
+				}
 				usb_newline();
+			}
+			GLCD_Clr();
+			GLCD_Setxy(0,0);
+			switch(Table)
+			{
+				case 0:	pprintf_P(Pbsn, LCD);
+						break;
+				case 1: pprintf_P(Pbfree, LCD);
+						break;
+				case 2: pprintf_P(Baking, LCD);
+						break;
+				case 3: pprintf_P(Drying, LCD);
+						break;
+				case 11: pprintf_P(Manual, LCD);
+						break;
+				default: pprintf_P(User, LCD);
+						break;
+			}
+				pprintf_P(PSTR("/n"), LCD);
 		}
 	}
 	else
@@ -219,53 +252,53 @@ void task_with_usb()
 		switch(command[0])
 		{
 			case '?':
-//						printf_P(PSTR("\r\nTemp0: %3d.%02d\t"), Temp0>>2,(Temp0&0x03)*25);
-						usb_printf_P(PSTR("Temp1: "));
-						usb_printnum(Temp1>>2);
+//						pprintf_P(PSTR("\r\nTemp0: %3d.%02d\t"), Temp0>>2,(Temp0&0x03)*25);
+						pprintf_P(PSTR("Temp1: "), USB);
+						printnum(Temp1>>2, USB);
 						usb_putchar('.');
-						usb_printnum((Temp1&0x03)*25);
+						printnum((Temp1&0x03)*25, USB);
 						usb_newline();
-						usb_printf_P(PSTR("Heat0: "));
-						usb_printnum(Heat0);
-						usb_printf_P(PSTR("\tHeat1: "));
-						usb_printnum(Heat1);
+						pprintf_P(PSTR("Heat0: "), USB);
+						printnum(Heat0, USB);
+						pprintf_P(PSTR("\tHeat1: "), USB);
+						printnum(Heat1, USB);
 						usb_newline();
-						usb_printf_P(PSTR("Temp. profile: "));
-						usb_printnum(Table);
+						pprintf_P(PSTR("Temp. profile: "), USB);
+						printnum(Table, USB);
 						usb_putchar('\t');
 						if(Status_task & TASK_MAN)
 						{
-							usb_printf_P(PSTR("Manual ctrl "));
-							usb_printnum(PTemp>>2);
+							pprintf_P(Manual, USB);
+							printnum(PTemp>>2, USB);
 						}
 						else
 							switch(Table)
 							{
-								case 0:	usb_printf_P(PSTR("PbSn solder"));
+								case 0:	pprintf_P(Pbsn, USB);
 										break;
-								case 1: usb_printf_P(PSTR("Pb-free solder"));
+								case 1: pprintf_P(Pbfree, USB);
 										break;
-								case 2: usb_printf_P(PSTR("Chip baking"));
+								case 2: pprintf_P(Baking, USB);
 										break;
-								case 3: usb_printf_P(PSTR("Film drying"));
+								case 3: pprintf_P(Drying, USB);
 										break;
-								default: usb_printf_P(PSTR("User profile"));
+								default: pprintf_P(User, USB);
 										break;
 							}
 							usb_newline();
-						usb_printf_P(PSTR("Echo : "));
+						pprintf_P(PSTR("Echo : "), USB);
 						if(Status_com & ECHO)
 						{
-							usb_printf_P(PSTR("ON"));
+							pprintf_P(PSTR("ON"), USB);
 						}
 						else
 						{
-							usb_printf_P(PSTR("OFF"));
+							pprintf_P(PSTR("OFF"), USB);
 						}
 						usb_newline();
 						break;
 			case 'b':
-			case 'B': 	//printf_P(PSTR("Switching to DFU mode"));
+			case 'B': 	//pprintf_P(PSTR("Switching to DFU mode"));
 						TCCR0B = 0;				// stop timer 0
 						TCCR1B = 0;				// stop timer 1
 						TIMSK0 = 0;				// stop interrupt from timer 0
@@ -275,13 +308,13 @@ void task_with_usb()
 			case 'E':	if(Status_com & ECHO)
 						{
 							Status_com &= ~ECHO;
-							usb_printf_P(PSTR("echo off"));
+							pprintf_P(PSTR("echo off"), USB);
 							usb_newline();
 						}
 						else
 						{
 							Status_com |= ECHO;
-							usb_printf_P(PSTR("echo on"));
+							pprintf_P(PSTR("echo on"), USB);
 							usb_newline();
 						}
 						break;
@@ -302,13 +335,13 @@ void task_with_usb()
 			case 'D':	if(Status_com & DEBUG)
 						{
 							Status_com &= ~DEBUG;
-							usb_printf_P(PSTR("debug off"));
+							pprintf_P(PSTR("debug off"), USB);
 							usb_newline();
 						}
 						else
 						{
 							Status_com |= DEBUG;
-							usb_printf_P(PSTR("debug on"));
+							pprintf_P(PSTR("debug on"), USB);
 							usb_newline();
 						}
 						break;
@@ -316,13 +349,13 @@ void task_with_usb()
 			case 'M':	if(Status_task & TASK_MAN)
 						{
 							Status_com &= ~TASK_MAN;
-							usb_printf_P(PSTR("Automatic ctrl"));
+							pprintf_P(PSTR("Automatic ctrl"), USB);
 							usb_newline();
 						}
 						else
 						{
 							Status_com |= TASK_MAN;
-							usb_printf_P(PSTR("Manual ctrl"));
+							pprintf_P(PSTR("Manual ctrl"), USB);
 							usb_newline();
 						}
 						break;
@@ -335,8 +368,8 @@ void task_with_usb()
 			case 't':
 			case 'T':	if(command[1]==0x0d)
 						{
-							usb_printf_P(PSTR("Preset temp: "));
-							usb_printnum(PTemp>>2);
+							pprintf_P(PSTR("Preset temp: "), USB);
+							printnum(PTemp>>2, USB);
 							usb_newline();
 							break;
 						}
@@ -353,32 +386,42 @@ void task_with_usb()
 /*--    send number over usb_newline			   --*/
 /*---------------------------------------------------*/
 
-void usb_printnum(int16_t num)
+void printnum(int16_t num, uint8_t device)
 {
     int16_t c;
     
     if (num < 0)
     {
-            usb_putchar('-');
+			if(device == USB)
+				usb_putchar('-');
+			else
+				lcd_putchar('-');
             num = -num;
     }
     c = num / 10;
     if (c)
-        usb_printnum(c);
-    usb_putchar('0' + ((uint8_t) (num % 10)));
+        printnum(c, device);
+		
+	if (device == USB)
+		usb_putchar('0' + ((uint8_t) (num % 10)));
+	else
+		lcd_putchar('0' + ((uint8_t) (num % 10)));
 }
 
 /*---------------------------------------------------*/
 /*--    send text from pgm mem over usb_newline    --*/
 /*---------------------------------------------------*/
 
-void usb_printf_P(PGM_P txt_P)
+void pprintf_P(PGM_P txt_P, uint8_t device)
 {
     uint8_t c;
     
     while (c = pgm_read_byte(txt_P++))
 	{
-        usb_putchar(c);
+		if(device == USB)
+			usb_putchar(c);
+		else
+			lcd_putchar(c);
 	}
 }
 

@@ -11,8 +11,10 @@
 //----------------------------------------------------------
 //					GLOBAL VARIABLES
 //----------------------------------------------------------
-
-static uint8_t GLCD_buffer[102];
+#ifdef GLCD_BUFFER
+//	static uint8_t GLCD_buffer[102];
+#define GLCD_buffer	lcd_buffer
+#endif
 
 GLCD_POS GLCD_txt_pos;
 
@@ -28,10 +30,9 @@ FONT_DEF *GLCD_FONT;
 void GLCD_Init(void)
 {
 	eadogs_init_glcd();
-//	GLCD_FONT = &Font_System5x8;
+	GLCD_FONT = &Font_System5x8;
 //	stdout = stderr = &glcd_str; // setup streams
-//	GLCD_Clr_Buffer();
-//	GLCD_UpdateDisplay();
+	GLCD_Clr();
 }
 
 //----------------------------------------------------------
@@ -176,46 +177,11 @@ void GLCD_Rectangle(uint8_t x, uint8_t y, uint8_t a, uint8_t b)
 
 void GLCD_DisplayPicture (PGM_P PictureData)
 {
-	uint8_t *dataxx;
+//	uint8_t *dataxx;
 	  
-	dataxx = memcpy_P(GLCD_buffer, PictureData, 98);
+//	dataxx = memcpy_P(GLCD_buffer, PictureData, 98);
 //	eadogs_data_write(dataxx[0]);
 }
-#endif
-
-//------------------------------------------------------------------------------
-
-void GLCD_UpdateDisplay(void)
-{
-	
-	uint8_t y=0;
-
-  	for (y = 0; y < 64; y+=8) 						/* loop on the 8 pages */
-   	{
-//  		bo9864_setxy(0,page<<3); 							/* Set the page on left controller*/
-//		bo9864_data_write(0,98,GLCD_buffer);
-	}
-}
-//------------------------------------------------------------------------------
-
-void GLCD_Clr_Buffer(void)
-{
-	uint8_t i,j;
-
-		for(j=0; j<98; j++)
-		{
-			GLCD_buffer[j]=0;
-		}
-}
-
-//------------------------------------------------------------------------------
-
-void GLCD_Clr(void)
-{
-	GLCD_Clr_Buffer();
-	GLCD_UpdateDisplay();
-}
-
 
 //------------------------------------------------------------------------------
 
@@ -225,7 +191,7 @@ void GLCD_Set_Dot(uint8_t x, uint8_t y)
 	
 	page = y/8;
 	
-	GLCD_buffer[x] |= _BV(y % 8);
+	GLCD_buffer[page][x] |= _BV(y % 8);
 }
 
 //------------------------------------------------------------------------------
@@ -236,21 +202,81 @@ void GLCD_Clr_Dot(uint8_t x, uint8_t y)
 	
 	page = y/8;
 	
-	GLCD_buffer[x] &= ~(_BV(y % 8));
+	GLCD_buffer[page][x] &= ~(_BV(y % 8));
 }
+
+#endif
+
+//------------------------------------------------------------------------------
+
+#ifdef GLCD_BUFFER
+void GLCD_UpdateDisplay(void)
+{
+	
+	uint8_t y=0;
+
+	for (i=0; i<8; i++)
+	{
+		GLCD_Setxy(0,i*8);
+		for(j=0; j<102; j++)
+		{
+			GLCD_Send_data(1,&(GLCD_buffer[i][j]));
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void GLCD_Clr_Buffer(void)
+{
+	uint8_t j;
+
+		for(j=0; j<102; j++)
+		{
+			GLCD_buffer[j]=0;
+		}
+}
+#endif
+//------------------------------------------------------------------------------
+
+
+void GLCD_Clr(void)
+{
+#ifdef GLCD_BUFFER
+	GLCD_Clr_Buffer();
+	GLCD_UpdateDisplay();
+#else
+	uint8_t i,j,k=0;
+	for (i=0; i<8; i++)
+	{
+		GLCD_Setxy(0,i*8);
+		for(j=0; j<102; j++)
+		{
+			GLCD_Send_data(1,&k);
+		}
+	}
+#endif
+}
+
+
 
 
 
 //------------------------------------------------------------------------------
 
 
-void GLCD_Putchar (uint8_t Char, FONT_DEF *toto, uint8_t overlay)
+void lcd_putchar(uint8_t Char)
+{
+	GLCD_Putchar(Char, GLCD_FONT);
+}
+
+void GLCD_Putchar(uint8_t Char, FONT_DEF *toto)
 {
 	uint8_t CharColumn=0; 
 	uint8_t shift=0;
 	uint8_t UpperCharPointer=1;
-	uint8_t buffer[9][3];
-	uint8_t page, x, y;
+	uint8_t buffer[3][9];
+	uint8_t page, x, y, z;
 	uint8_t dist = 2;
 	uint32_t clmbuffer, clmmask = 0x000000ff;
 	
@@ -265,7 +291,7 @@ void GLCD_Putchar (uint8_t Char, FONT_DEF *toto, uint8_t overlay)
 	{
 /* test for carrier return -> automatic wrap?? */
 
-		if (GLCD_txt_pos.X > 101 - (toto->W)) 
+		if (GLCD_txt_pos.X > (101 - (toto->W))) 
 		{	
 			GLCD_txt_pos.X = 0;
 			GLCD_txt_pos.Y += ((toto->H) + dist);
@@ -274,16 +300,17 @@ void GLCD_Putchar (uint8_t Char, FONT_DEF *toto, uint8_t overlay)
 			GLCD_txt_pos.Y = 0;
 
 /* read out data from area of character */
-		for(page = 0; page < ((toto->H)/5 + 1); page++)
+#ifdef GLCD_BUFFER
+		for(page = 0; page < ((toto->H)/5+1); page++)
 		{
 			y=(GLCD_txt_pos.Y + (page<<3))/8;
 			for(CharColumn = 0; CharColumn < (toto->W); CharColumn++)
 			{
 				x = GLCD_txt_pos.X + CharColumn;
-				buffer[CharColumn][page]=GLCD_buffer[x];
+				buffer[page][CharColumn]=GLCD_buffer[x];
 			}
 		}
-	
+#endif	
 	    	
 /* Draw a char in buffer */
 		CharColumn = 0;
@@ -310,46 +337,49 @@ void GLCD_Putchar (uint8_t Char, FONT_DEF *toto, uint8_t overlay)
 			clmbuffer = clmbuffer<<(shift);
 			clmmask = clmmask<<(shift);
 			clmmask = ~clmmask;
-			buffer[CharColumn][0] &= (uint8_t)clmmask;
-			buffer[CharColumn][0] |= (uint8_t)clmbuffer;
-			buffer[CharColumn][1] &= (uint8_t)(clmmask>>8);
-			buffer[CharColumn][1] |= (uint8_t)(clmbuffer>>8);
-			buffer[CharColumn][2] &= (uint8_t)(clmmask>>16);
-			buffer[CharColumn][2] |= (uint8_t)(clmbuffer>>16);
+			for(page=0; page<3; page++)
+			{
+				buffer[page][CharColumn] &= (uint8_t)(clmmask>>(page*8));
+				buffer[page][CharColumn] |= (uint8_t)(clmbuffer>>(page*8));
+			}
+			//buffer[1][CharColumn] &= (uint8_t)(clmmask>>8);
+			//buffer[1][CharColumn] |= (uint8_t)(clmbuffer>>8);
+			//buffer[2][CharColumn] &= (uint8_t)(clmmask>>16);
+			//buffer[2][CharColumn] |= (uint8_t)(clmbuffer>>16);
 			CharColumn++;
 		}
 
 /* Insert a space after a char */	
 
-		buffer[CharColumn][0] &= (uint8_t)clmmask;
-		buffer[CharColumn][1] &= (uint8_t)(clmmask>>8);
-		buffer[CharColumn][2] &= (uint8_t)(clmmask>>16);
+		buffer[0][CharColumn] &= (uint8_t)clmmask;
+		buffer[1][CharColumn] &= (uint8_t)(clmmask>>8);
+		buffer[2][CharColumn] &= (uint8_t)(clmmask>>16);
 		
 
 /* write char buffer back to display */
 		shift = GLCD_txt_pos.X + (toto->W);						//to save space in conditions
+		if (shift < 102) 										/* Check if this is the last char of the line */
+			z = (toto->W)+1;
+		else
+			z = toto->W;
+
 		for(page = 0; page < ((toto->H)/5 + 1); page++)
 		{
 			y=(GLCD_txt_pos.Y + (page<<3))/8;
-			if (shift < 102) 										/* Check if this is the last char of the line */
+			
+			for(CharColumn = 0; CharColumn < z; CharColumn++)
 			{
-				for(CharColumn = 0; CharColumn < ((toto->W) +1); CharColumn++)
-				{
-					x = GLCD_txt_pos.X + CharColumn;
-					GLCD_buffer[x] = buffer[CharColumn][page];
-				}
-			}
-			else
-			{
-				for(CharColumn = 0; CharColumn < ((toto->W)); CharColumn++)
-				{
-					x = GLCD_txt_pos.X + CharColumn;
-					GLCD_buffer[x] = buffer[CharColumn][page];
-				}
+				x = GLCD_txt_pos.X + CharColumn;
+#ifdef GLCD_BUFFER
+				GLCD_buffer[y][x] = buffer[page][CharColumn];
+#else
+				GLCD_Setxy(x,y*8);
+				GLCD_Send_data(1,&(buffer[page][CharColumn]));
+#endif
 			}
 		}
 
-		if (shift < 128) 		/* Check if this is the last char of the line */
+		if (shift < 102) 		/* Check if this is the last char of the line */
 			GLCD_txt_pos.X = shift + 1;		//update position
 		else
 			GLCD_txt_pos.X = shift;			//update position

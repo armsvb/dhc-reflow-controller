@@ -24,6 +24,8 @@ DATE		VERSION	REVISOR DESCRIPTION
 /* 			     DECLARATIONS / DEFINITIONS			       */
 /*******************************************************************************/
 
+#define FONT_5X8
+
 /* EXTERN Function Prototype(s) */
 
 /* Extern definitions */
