@@ -9,8 +9,8 @@
 // defines for Status_task
 #define TASK_GO			0x01
 #define TASK_MAN		0x02
-#define LCD				0x00
-#define USB				0x01
+#define LCD_DEF			0x00
+#define USB_DEF			0x01
 
 extern uint8_t Status_task, Status_com;
 //extern uint16_t Temp1;

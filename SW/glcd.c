@@ -11,10 +11,15 @@
 //----------------------------------------------------------
 //					GLOBAL VARIABLES
 //----------------------------------------------------------
+//<<<<<<< HEAD
 #ifdef GLCD_BUFFER
 //	static uint8_t GLCD_buffer[102];
 #define GLCD_buffer	lcd_buffer
 #endif
+//=======
+
+//static uint8_t GLCD_buffer[98];
+//>>>>>>> parent of 40279c3... updated x size of display - need to change it to define in .h
 
 GLCD_POS GLCD_txt_pos;
 
@@ -213,8 +218,9 @@ void GLCD_Clr_Dot(uint8_t x, uint8_t y)
 void GLCD_UpdateDisplay(void)
 {
 	
-	uint8_t y=0;
+	uint8_t page=0;
 
+<<<<<<< HEAD
 	for (i=0; i<8; i++)
 	{
 		GLCD_Setxy(0,i*8);
@@ -222,6 +228,12 @@ void GLCD_UpdateDisplay(void)
 		{
 			GLCD_Send_data(1,&(GLCD_buffer[i][j]));
 		}
+=======
+  	for (page = 0; page < 8; page++) 						/* loop on the 8 pages */
+   	{
+//  		bo9864_setxy(0,page<<3); 							/* Set the page on left controller*/
+//		bo9864_data_write(0,98,GLCD_buffer);
+>>>>>>> parent of 40279c3... updated x size of display - need to change it to define in .h
 	}
 }
 

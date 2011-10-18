@@ -12,7 +12,7 @@
 #include "pwm.h"
 #include "routines.h"
 #include "encoder.h"
-#include "glcd.h"
+//#include "glcd.h"
 #include "usb.h"
 #include "usb/usb_drv.h"
 #include "usb/usb_standard_request.h"
@@ -40,7 +40,7 @@ int main(void)
 {
 	
 	HW_Init();
-	GLCD_Init();
+//	GLCD_Init();
 	USB_Init_hw();
 	Enc_Init();
 	task_init();
