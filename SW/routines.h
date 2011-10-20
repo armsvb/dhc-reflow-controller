@@ -2,15 +2,18 @@
 #define ROUTINES_H
 
 // defines for Status_com
-#define COMMAND			0x01
-#define ECHO			0x02
-#define DEBUG			0x04
+#define COMMAND				0x01
+#define ECHO				0x02
+#define DEBUG				0x04
 
 // defines for Status_task
-#define TASK_GO			0x01
-#define TASK_MAN		0x02
-#define LCD_DEF			0x00
-#define USB_DEF			0x01
+#define TASK_GO				0x01
+#define TASK_MAN			0x02
+#define TASK_SLCT			0x04
+#define TASK_SETTING_TIME	0x08
+#define TASK_SETTING_TEMP	0x10
+#define LCD_DEF				0x00
+#define USB_DEF				0x01
 
 extern uint8_t Status_task, Status_com;
 //extern uint16_t Temp1;
