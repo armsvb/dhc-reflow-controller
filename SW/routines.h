@@ -10,8 +10,10 @@
 #define TASK_GO				0x01
 #define TASK_MAN			0x02
 #define TASK_SLCT			0x04
-#define TASK_SETTING_TIME	0x08
-#define TASK_SETTING_TEMP	0x10
+//#define TASK_SETTING_TIME	0x08
+//#define TASK_SETTING_TEMP	0x10
+#define TASK_SW				0x10
+#define TASK_MENU			0x20
 #define LCD_DEF				0x00
 #define USB_DEF				0x01
 

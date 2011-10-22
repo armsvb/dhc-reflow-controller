@@ -41,6 +41,7 @@ static uint16_t PTemp;
 static uint16_t a;
 volatile uint8_t INT0_count;
 volatile uint8_t PCINT1_count;
+volatile uint8_t PCINT1_count2;
 static uint16_t Time;
 uint8_t Table;
 struct PID_DATA PidData;
@@ -55,6 +56,7 @@ ISR(PCINT1_vect)
 {
 //	if(!(HEAT_PIN & _BV(PHASE)))
 		PCINT1_count++;
+		PCINT1_count2++;
 }
 
 ISR(TIMER0_OVF_vect)
@@ -120,7 +122,7 @@ void task(void)
 /*---------------------------------------------------*/
 void task_no_usb(void)
 {
-	uint8_t encoder;
+	uint8_t encoder, menu;
 	uint16_t temp_local = 0;
 
 	encoder = Enc_GetKey(0);
@@ -140,7 +142,7 @@ void task_no_usb(void)
 							Table++;
 						break;
 		case KEYSWITCH:	
-						Status_task |= TASK_GO;
+						Status_task |= TASK_SW;
 						break;
 		case KEYSTOP:	
 						Status_task &= ~TASK_GO;
@@ -159,7 +161,7 @@ void task_no_usb(void)
 		else
 			HEAT2_OFF;
 	
-		if(PCINT1_count == 100)
+		if(PCINT1_count >= 100)
 		{
 			PCINT1_count = 0;
 			Time++;
@@ -218,7 +220,27 @@ void task_no_usb(void)
 		HEAT2_OFF;
 		Time = 0;
 	}
+	
+	if(encoder == KEYSWITCH)
+	{
+		if(PCINT1_count2 >= 100)
+		{
+			PCINT1_count2 = 0;
+			menu++;
+		}
+		if(menu >2)
+			Status_task |= TASK_MENU;
+	}
+	else
+	{
+		if(Status_task & TASK_MENU)
+			menu = 0;
+		else if(Status_task & TASK_SW)
+			Status_task |= TASK_GO;
+	}
 
+	if (Status_task & TASK_MENU)
+		Menu_simple();
 }
 
 /*---------------------------------------------------*/
