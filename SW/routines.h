@@ -14,6 +14,7 @@
 //#define TASK_SETTING_TEMP	0x10
 #define TASK_SW				0x10
 #define TASK_MENU			0x20
+#define TASK_MENUSTART		0x80
 #define LCD_DEF				0x00
 #define USB_DEF				0x01
 

@@ -220,6 +220,9 @@ void task_no_usb(void)
 		HEAT2_OFF;
 		Time = 0;
 	}
+
+	if (Status_task & TASK_MENU)
+		Menu_simple(encoder);
 	
 	if(encoder == KEYSWITCH)
 	{
@@ -228,19 +231,25 @@ void task_no_usb(void)
 			PCINT1_count2 = 0;
 			menu++;
 		}
-		if(menu >2)
-			Status_task |= TASK_MENU;
+		if(menu > 2)
+		{
+			LED3_ON;
+		}
 	}
 	else
 	{
-		if(Status_task & TASK_MENU)
-			menu = 0;
-		else if(Status_task & TASK_SW)
-			Status_task |= TASK_GO;
+		if (menu > 2)
+			Status_task |= (TASK_MENU | TASK_MENUSTART);
+
+		if(!(Status_task & TASK_MENU))
+			if(Status_task & TASK_SW)
+			{
+				Status_task |= TASK_GO;
+				Status_task &= ~TASK_SW;
+			}
+		menu = 0
 	}
 
-	if (Status_task & TASK_MENU)
-		Menu_simple();
 }
 
 /*---------------------------------------------------*/
