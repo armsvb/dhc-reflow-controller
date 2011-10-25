@@ -5,6 +5,6 @@ extern PGM_P HZ;
 extern PGM_P KHZ;
 extern PGM_P MHZ;
 
-void simple_menu(uint8_t *settings, uint8_t *set);
+void Menu_simple(uint8_t enc_data);
 
 #endif /* SIMPLE_MENU_H_ */

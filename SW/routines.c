@@ -32,6 +32,8 @@ prog_char Drying[] = "Film drying";
 prog_char User[] = "User profile";
 prog_char Manual[] = "Manual ctrl ";
 
+
+
 uint8_t Status_com, Status_task;
 static uint8_t I;
 static uint8_t Heat0, Heat1;

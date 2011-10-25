@@ -21,6 +21,13 @@
 extern uint8_t Status_task, Status_com;
 //extern uint16_t Temp1;
 
+extern PGM_P Pbsn;
+extern PGM_P Pbfree;
+extern PGM_P Baking;
+extern PGM_P Drying;
+extern PGM_P User;
+extern PGM_P Manual;
+
 void task_init(void);
 
 void task(void);
