@@ -24,6 +24,9 @@
 
 PGM_P PROFILES = " Temp profiles\r\n";
 PGM_P PID = " PID debug\r\n";
+PGM_P P = " P :";
+PGM_P I = " I :";
+PGM_P D = " D :";
 PGM_P EXIT = " Exit\r\n";
 PGM_P BOTT_ROW = " DOWN   SLCT   UP";
 PGM_P EMPTY = "\r\n";
@@ -31,7 +34,7 @@ PGM_P EMPTY = "\r\n";
 
 void Menu_simple(int8_t enc_data)
 {
-	static uint8_t menu = 0, menu_item = 0; max_item = 2; settings_old;
+	static uint8_t menu = 0, submenu = 0; menu_item = 0; max_item = 2; settings_old;
 	uint8_t data2, pom;
 	PGM_P row1, row2, row3, row4;
 	
@@ -122,19 +125,23 @@ void Menu_simple(int8_t enc_data)
 					max_item = 10;
 					break;
 		case	2:	row1 = PID;
+					row2 = P;
+					row3 = I;
+					row4 = D;
+
 					case(menu_item)
 					{
-						case 0: row2 = NEXT;
+						case 0: row2 = EXIT;
+								row3 = EMPTY;
+								row4 = EMPTY;
 								break;
-						case 1: row2 = P;
+						case 1: row2 = PSTR("*P : ");
 								break;
-						case 2: row2 = I;
+						case 2: row3 = PSTR("*I : ");
 								break;
-						case 3: row2 = D;
+						case 3: row4 = PSTR("*D : ");
 								break;
 					}
-					row3 = EMPTY;
-					row4 = EMPTY;
 					max_item = 3;
 					break;
 		default	 :  break;
