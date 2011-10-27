@@ -34,7 +34,7 @@ PGM_P EMPTY = "\r\n";
 
 void Menu_simple(int8_t enc_data)
 {
-	static uint8_t menu = 0, submenu = 0; menu_item = 0; max_item = 2; settings_old;
+	static uint8_t menu = 0, menu2 = 0; menu_item = 0; max_item = 2; number = 0;
 	uint8_t data2, pom;
 	PGM_P row1, row2, row3, row4;
 	
@@ -52,28 +52,19 @@ void Menu_simple(int8_t enc_data)
 							else
 								menu_item--;
 							break;
-			case KEYSWITCH: if(submenu)
+			case KEYSWITCH: if(menu2 == 0)
 							{
+								menu2 = menu_item;
+								menu_item = 1;
 							}
-							if(menu & 0xFC)
-							{
-								submenu = menu_item;
-							}
-							else if(menu & 0x03)
-							{
-								menu &= 0x03;
-								switch(menu)
-								{
-									case 1:	menu |= menu_item<<4;
-											break;
-									case 2: menu |= menu_item<<2;
-											break;
-								}
-							}
-							else
+							else if(menu == 0)
 							{
 								menu = menu_item;
 								menu_item = 1;
+							}
+							else 
+							{
+								number = menu_item;
 							}
 							break;
 			case KEYSTOP:	Status_task &= ~TASK_MENU;
@@ -82,71 +73,74 @@ void Menu_simple(int8_t enc_data)
 			default:		break;
 		}
 	}
-	
-	switch(menu & 0x03)
+
+	if(menu2)
+	else
 	{
-		case 	0:  switch(menu_item)
-					{
-						case 0: row1 = EXIT;
-								break;
-						case 1: row1 = PROFILES;
-								break;
-						case 2: row1 = PID;
-								break;
-					}
-					row2 = EMPTY;
-					row3 = EMPTY;
-					row4 = EMPTY;
-					max_item = 2
-					break;
-		case	1:	row1 = PROFILES;
-					case(menu_item)
-					{
-						case 0: row2 = EXIT;
-								break;
-						case 1: row2 = Pbsn;
-								break;
-						case 2: row2 = Pbfree;
-								break;
-						case 3: row2 = Baking;
-								break;
-						case 4: row2 = Drying;
-								break;
-						case 5: 
-						case 6:
-						case 7:
-						case 8:
-						case 9:
-						case 10: row2 = User;
-								break;
-					}
-					row3 = EMPTY;
-					row4 = EMPTY;
-					max_item = 10;
-					break;
-		case	2:	row1 = PID;
-					row2 = P;
-					row3 = I;
-					row4 = D;
+		switch(menu & 0x03)
+		{
+			case 	0:  switch(menu_item)
+						{
+							case 0: row1 = EXIT;
+									break;
+							case 1: row1 = PROFILES;
+									break;
+							case 2: row1 = PID;
+									break;
+						}
+						row2 = EMPTY;
+						row3 = EMPTY;
+						row4 = EMPTY;
+						max_item = 2
+						break;
+			case	1:	row1 = PROFILES;
+						case(menu_item)
+						{
+							case 0: row2 = EXIT;
+									break;
+							case 1: row2 = Pbsn;
+									break;
+							case 2: row2 = Pbfree;
+									break;
+							case 3: row2 = Baking;
+									break;
+							case 4: row2 = Drying;
+									break;
+							case 5: 
+							case 6:
+							case 7:
+							case 8:
+							case 9:
+							case 10: row2 = User;
+									break;
+						}
+						row3 = EMPTY;
+						row4 = EMPTY;
+						max_item = 10;
+						break;
+			case	2:	row1 = PID;
+						row2 = P;
+						row3 = I;
+						row4 = D;
 
-					case(menu_item)
-					{
-						case 0: row2 = EXIT;
-								row3 = EMPTY;
-								row4 = EMPTY;
-								break;
-						case 1: row2 = PSTR("*P : ");
-								break;
-						case 2: row3 = PSTR("*I : ");
-								break;
-						case 3: row4 = PSTR("*D : ");
-								break;
-					}
-					max_item = 3;
-					break;
-		default	 :  break;
+						case(menu_item)
+						{
+							case 0: row2 = EXIT;
+									row3 = EMPTY;
+									row4 = EMPTY;
+									break;
+							case 1: row2 = PSTR("*P : ");
+									break;
+							case 2: row3 = PSTR("*I : ");
+									break;
+							case 3: row4 = PSTR("*D : ");
+									break;
+						}
+						max_item = 3;
+						break;
+			default	 :  break;
+		}
 	}
-
 
 	if(Status_task & TASK_MENUSTART)			// if changed
 	{
