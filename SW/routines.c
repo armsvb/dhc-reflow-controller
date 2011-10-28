@@ -330,12 +330,36 @@ void task_with_usb()
 						}
 						usb_newline();
 						break;
+			case 'a':
+			case 'A':	if(Status_com & DEBUG)
+						{
+							Status_com &= ~DEBUG;
+							pprintf_P(PSTR("debug off"), USB_DEF);
+							usb_newline();
+						}
+						else
+						{
+							Status_com |= DEBUG;
+							pprintf_P(PSTR("debug on"), USB_DEF);
+							usb_newline();
+						}
+						break;
 			case 'b':
 			case 'B': 	//pprintf_P(PSTR("Switching to DFU mode"));
 						TCCR0B = 0;				// stop timer 0
 						TCCR1B = 0;				// stop timer 1
 						TIMSK0 = 0;				// stop interrupt from timer 0
 						goto_boot();
+						break;
+			case 'd':
+			case 'D':	if(command[1]==0x0d)
+						{
+							pprintf_P(PSTR("PID D term: "), USB_DEF);
+							printnum(PidData.D_Factor, USB_DEF);
+							usb_newline();
+							break;
+						}
+						PidData.D_Factor = 100*(command[1]-48) + 10*(command[2]-48) + (command[3]-48);
 						break;
 			case 'e':
 			case 'E':	if(Status_com & ECHO)
@@ -351,6 +375,9 @@ void task_with_usb()
 							usb_newline();
 						}
 						break;
+			case 'f':
+			case 'F':	Status_task &= ~TASK_GO;
+						break;
 			case 'h':
 			case 'H':	if(command[1]==0x0d)
 							break;
@@ -364,19 +391,15 @@ void task_with_usb()
 										break;
 							default :	break;
 						}
-			case 'd':
-			case 'D':	if(Status_com & DEBUG)
+			case 'i':
+			case 'I':	if(command[1]==0x0d)
 						{
-							Status_com &= ~DEBUG;
-							pprintf_P(PSTR("debug off"), USB_DEF);
+							pprintf_P(PSTR("PID 1/I term: "), USB_DEF);
+							printnum(PidData.I_Factor, USB_DEF);
 							usb_newline();
+							break;
 						}
-						else
-						{
-							Status_com |= DEBUG;
-							pprintf_P(PSTR("debug on"), USB_DEF);
-							usb_newline();
-						}
+						PidData.I_Factor = 100*(command[1]-48) + 10*(command[2]-48) + (command[3]-48);
 						break;
 			case 'm':
 			case 'M':	if(Status_task & TASK_MAN)
@@ -392,11 +415,18 @@ void task_with_usb()
 							usb_newline();
 						}
 						break;
+			case 'p':
+			case 'P':	if(command[1]==0x0d)
+						{
+							pprintf_P(PSTR("PID P term: "), USB_DEF);
+							printnum(PidData.P_Factor, USB_DEF);
+							usb_newline();
+							break;
+						}
+						PidData.P_Factor = 100*(command[1]-48) + 10*(command[2]-48) + (command[3]-48);
+						break;
 			case 's':
 			case 'S':	Status_task |= TASK_GO;
-						break;
-			case 'f':
-			case 'F':	Status_task &= ~TASK_GO;
 						break;
 			case 't':
 			case 'T':	if(command[1]==0x0d)

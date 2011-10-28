@@ -118,26 +118,7 @@ void Menu_simple(int8_t enc_data)
 						row4 = EMPTY;
 						max_item = 10;
 						break;
-			case	2:	row1 = PID;
-						row2 = P;
-						row3 = I;
-						row4 = D;
 
-						case(menu_item)
-						{
-							case 0: row2 = EXIT;
-									row3 = EMPTY;
-									row4 = EMPTY;
-									break;
-							case 1: row2 = PSTR("*P : ");
-									break;
-							case 2: row3 = PSTR("*I : ");
-									break;
-							case 3: row4 = PSTR("*D : ");
-									break;
-						}
-						max_item = 3;
-						break;
 			default	 :  break;
 		}
 	}
