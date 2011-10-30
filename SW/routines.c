@@ -244,11 +244,13 @@ void task_no_usb(void)
 			Status_task |= (TASK_MENU | TASK_MENUSTART);
 
 		if(!(Status_task & TASK_MENU))
+		{
 			if(Status_task & TASK_SW)
 			{
 				Status_task |= TASK_GO;
-				Status_task &= ~TASK_SW;
 			}
+			Status_task &= ~TASK_SW;
+		}
 		menu = 0
 	}
 

@@ -52,14 +52,21 @@ void Menu_simple(int8_t enc_data)
 							else
 								menu_item--;
 							break;
-			case KEYSWITCH: if(menu2 == 0)
+			case KEYSWITCH: if(menu == 0)				//if top of the menu
 							{
-								menu2 = menu_item;
+								if(menu_item == 0)		// if exit		
+								{
+									Status_task &= ~TASK_MENU;
+									return;
+								}
+								menu = menu_item;
 								menu_item = 1;
 							}
-							else if(menu == 0)
+							else if(menu2 == 0)
 							{
-								menu = menu_item;
+								if(menu_item == 0)
+									menu = 0;			// return to top menu
+								menu2 = menu_item;
 								menu_item = 1;
 							}
 							else 
@@ -75,48 +82,34 @@ void Menu_simple(int8_t enc_data)
 	}
 
 	if(menu2)
+		row2 = POINT;
+		
+		switch()
 	else
 	{
-		switch(menu & 0x03)
+		row2 = EMPTY;
+		row3 = EMPTY;
+		row4 = EMPTY;
+		
+		switch(menu)
 		{
-			case 	0:  switch(menu_item)
-						{
-							case 0: row1 = EXIT;
-									break;
-							case 1: row1 = PROFILES;
-									break;
-							case 2: row1 = PID;
-									break;
-						}
-						row2 = EMPTY;
-						row3 = EMPTY;
-						row4 = EMPTY;
-						max_item = 2
+			case 	0:  row1 = EXIT;
+						break
+			case	1:	row1 = Pbsn;
 						break;
-			case	1:	row1 = PROFILES;
-						case(menu_item)
-						{
-							case 0: row2 = EXIT;
-									break;
-							case 1: row2 = Pbsn;
-									break;
-							case 2: row2 = Pbfree;
-									break;
-							case 3: row2 = Baking;
-									break;
-							case 4: row2 = Drying;
-									break;
-							case 5: 
-							case 6:
-							case 7:
-							case 8:
-							case 9:
-							case 10: row2 = User;
-									break;
-						}
-						row3 = EMPTY;
-						row4 = EMPTY;
-						max_item = 10;
+			case	2:	row1 = Pbfree;
+						break;
+			case	3:	row1 = Baking;
+						break;
+			case	4:	row1 = Drying;
+						break;
+			case	5:	
+			case	6:	
+			case	7:	
+			case	8:	
+			case	9:	
+			case	10:	
+						row1 = User;
 						break;
 
 			default	 :  break;
@@ -135,6 +128,7 @@ void Menu_simple(int8_t enc_data)
 		if(Status_com & DEBUG)
 		{
 			pprintf_P(PSTR("\r\n M E N U :\n"),USB_DEF);
+//			pprintf_P(PSTR(PROFILES,USB_DEF);
 			pprintf_P(row1,USB_DEF);
 			pprintf_P(row2,USB_DEF);
 			pprintf_P(row3,USB_DEF);
