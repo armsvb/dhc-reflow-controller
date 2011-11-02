@@ -84,14 +84,14 @@ void Menu_simple(int8_t enc_data)
 	if(menu2)
 		row2 = POINT;
 		
-		switch()
+		switch(menu_item)
 	else
 	{
 		row2 = EMPTY;
 		row3 = EMPTY;
 		row4 = EMPTY;
 		
-		switch(menu)
+		switch(menu_item)
 		{
 			case 	0:  row1 = EXIT;
 						break
