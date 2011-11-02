@@ -27,6 +27,12 @@ PGM_P PID = " PID debug\r\n";
 PGM_P P = " P :";
 PGM_P I = " I :";
 PGM_P D = " D :";
+PGM_P TEMP = "Temp: ";
+PGM_P TIME = "Time: ";
+PGM_P POINT = "##: ";
+PGM_P GAP1  = "     ";
+PGM_P GAP2 = "  ";
+PGM_P STAR = " *";
 PGM_P EXIT = " Exit\r\n";
 PGM_P BOTT_ROW = " DOWN   SLCT   UP";
 PGM_P EMPTY = "\r\n";
@@ -81,15 +87,33 @@ void Menu_simple(int8_t enc_data)
 		}
 	}
 
-	if(menu2)
+	if(menu2 & 0xfe)
+	{
+		star2 = GAP2;
+		star3 = GAP2;
+		star4 = GAP2;
+		switch(menu2 & 0xfe)
+		{
+			    case 2: star2 = STAR;
+						number2b = menu_item;
+						break;
+				case 4: star3 = STAR;
+						number3 = menu_item;
+						break;
+		}
+	}
+	else if(menu2)
 		row2 = POINT;
-		
+		row3 = GAP1;
 		switch(menu_item)
+		{
+			    case 0:	row5 = 
+		}
 	else
 	{
 		row2 = EMPTY;
-		row3 = EMPTY;
-		row4 = EMPTY;
+		row3a = EMPTY;
+		row4a = EMPTY;
 		
 		switch(menu_item)
 		{
@@ -130,8 +154,30 @@ void Menu_simple(int8_t enc_data)
 			pprintf_P(PSTR("\r\n M E N U :\n"),USB_DEF);
 //			pprintf_P(PSTR(PROFILES,USB_DEF);
 			pprintf_P(row1,USB_DEF);
+			if(number)
+			{
+				printnum(number1,USB_DEF);
+				pprintf_P(EMPTY,USB_DEF);
+			}
+			else
+				pprintf_P(EMPTY,USB_DEF);
 			pprintf_P(row2,USB_DEF);
+			if(number)
+			{
+				printnum(number2,USB_DEF);
+				pprintf_P(star2,USB_DEF);
+				pprintf_P(TIME,USB_DEF);
+				printnum(number2b,USB_DEF);
+				pprintf_P(EMPTY,USB_DEF);
+			}			
 			pprintf_P(row3,USB_DEF);
+			if(number)
+			{
+				pprintf_P(star2,USB_DEF);
+				pprintf_P(TIME,USB_DEF);
+				printnum(number2b,USB_DEF);
+				pprintf_P(EMPTY,USB_DEF);
+			}			
 			pprintf_P(row4,USB_DEF);
 			pprintf_P(BOTT_ROW,USB_DEF);
 		}
