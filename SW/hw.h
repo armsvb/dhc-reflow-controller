@@ -9,9 +9,9 @@
 
 #define FONT_5X8
 
-#define K_P     3
-#define K_I     20
-#define K_D     50
+//#define K_P     3
+//#define K_I     20
+//#define K_D     50
 #define IMIN	-127
 #define IMAX	255
 #define AWR		256

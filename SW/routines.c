@@ -78,8 +78,9 @@ void task_init(void)
 	// defined other way in usb.c
 //	fdevopen((int (*)(char, FILE*))(USB_putchar),(int (*)(FILE*))usb_getchar); //for printf redirection 
 	Time = 0;
-	pid_Init(K_P, K_I, K_D, &PidData);
 	EE_init_table();
+	pid_Init(&PidData);
+
 }
 
 void task(void)
@@ -223,8 +224,8 @@ void task_no_usb(void)
 		Time = 0;
 	}
 
-	if (Status_task & TASK_MENU)
-		Menu_simple(encoder);
+//	if (Status_task & TASK_MENU)
+//		Menu_simple(encoder);
 	
 	if(encoder == KEYSWITCH)
 	{
@@ -251,7 +252,7 @@ void task_no_usb(void)
 			}
 			Status_task &= ~TASK_SW;
 		}
-		menu = 0
+		menu = 0;
 	}
 
 }
@@ -427,8 +428,10 @@ void task_with_usb()
 						}
 						PidData.P_Factor = 100*(command[1]-48) + 10*(command[2]-48) + (command[3]-48);
 						break;
-			case 's':
-			case 'S':	Status_task |= TASK_GO;
+			case 'S':	EE_save_pid(&PidData);
+						pprintf_P(PSTR("PID saved\n\r"), USB_DEF);
+						break;
+			case 's':	Status_task |= TASK_GO;
 						break;
 			case 't':
 			case 'T':	if(command[1]==0x0d)
@@ -480,7 +483,7 @@ void printnum(int16_t num, uint8_t device)
 void pprintf_P(PGM_P txt_P, uint8_t device)
 {
     uint8_t c;
-    
+   
     while (c = pgm_read_byte(txt_P++))
 	{
 		if(device == USB_DEF)

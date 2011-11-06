@@ -24,6 +24,7 @@
 
 #include "pid.h"
 #include "hw.h"
+#include "eeprom.h"
 
 /*! \brief Initialisation of PID controller parameters.
  *
@@ -34,16 +35,14 @@
  *  \param d_factor  Derivate term.
  *  \param pid  Struct with PID status.
  */
-void pid_Init(int16_t p_factor, int16_t i_factor, int16_t d_factor, pidData_t *pid_st)
+void pid_Init(pidData_t *pid_st)
 // Set up PID controller parameters
 {
   // Start values for PID controller
   pid_st->i_term = 0;
   pid_st->lastError = 0;
   // Tuning constants for PID loop
-  pid_st->P_Factor = p_factor;
-  pid_st->I_Factor = i_factor;
-  pid_st->D_Factor = d_factor;
+  EE_load_pid(pid_st);
   // Limits to avoid overflow
 }
 

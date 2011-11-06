@@ -16,7 +16,7 @@ typedef struct PID_DATA {
 } pidData_t;
 
 
-void pid_Init(int16_t p_factor, int16_t i_factor, int16_t d_factor, pidData_t *pid_st);
+void pid_Init(pidData_t *pid_st);
 
 int16_t pid_Controller(int16_t setPoint, int16_t processValue, pidData_t *pid_st);
 

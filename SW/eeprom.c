@@ -7,14 +7,15 @@
 #include "eeprom.h"
 #include "usb.h"
 #include "routines.h"
+#include "pid.h"
 
 
-table EEMEM EEtable[10];
+uint8_t EEMEM EEtable[10];
 /* = 
 {{5,30},{5,50},{3,70},{3,82},{0,94}};
 */
 
-temp_point EEMEM EEtemp[80];
+temp_point EEMEM EEtemp[10][8];
 /* = 
 {{0x0078,0x0258},{0x00f0,0x02dc},{0x012c,0x0384},{0x0140,0x0384},{0x01c2,0x0064},
  {0x0078,0x02D0},{0x00f0,0x0364},{0x012c,0x03E8},{0x014A,0x03E8},{0x01c2,0x0064},
@@ -22,6 +23,10 @@ temp_point EEMEM EEtemp[80];
  {0x0078,0x0244},{0x0E10,0x0244},{0x0E4C,0x0064}
 };
 */
+
+int16_t EEMEM K_I;
+int16_t EEMEM K_P;
+int16_t EEMEM K_D;
 
 static uint16_t next_time;
 static uint16_t last_time;
@@ -37,7 +42,7 @@ void EE_init_table(void)
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
 		eeprom_busy_wait();
-		pts = eeprom_read_byte(&(EEtable[0].PTS));
+		pts = eeprom_read_byte(&(EEtable[0]));
 	}
 	
 	if (pts != 0xFF)		//if first entry filled - already initialised
@@ -47,90 +52,89 @@ void EE_init_table(void)
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
 		eeprom_busy_wait();
-		eeprom_write_byte(&EEtable[0].PTS,5);
+		eeprom_write_byte(&EEtable[0],5);
 		eeprom_busy_wait();
-		eeprom_write_word(&EEtable[0].EEaddress,(uint16_t)(&EEtemp[0]));
+		eeprom_write_byte(&EEtable[1],5);
 		eeprom_busy_wait();
-		eeprom_write_byte(&EEtable[1].PTS,5);
+		eeprom_write_byte(&EEtable[2],3);
 		eeprom_busy_wait();
-		eeprom_write_word(&EEtable[1].EEaddress,(uint16_t)(&EEtemp[5]));
+		eeprom_write_byte(&EEtable[3],3);
+		for (pts=4;pts<10;pts++)
+		{
+			eeprom_busy_wait();
+			eeprom_write_byte(&EEtable[pts],0);
+		}
 		eeprom_busy_wait();
-		eeprom_write_byte(&EEtable[2].PTS,3);
+		eeprom_write_word(&EEtemp[0][0].time, 120);
 		eeprom_busy_wait();
-		eeprom_write_word(&EEtable[2].EEaddress,(uint16_t)(&EEtemp[10]));
+		eeprom_write_word(&EEtemp[0][0].temp, 150<<2);
 		eeprom_busy_wait();
-		eeprom_write_byte(&EEtable[3].PTS,3);
+		eeprom_write_word(&EEtemp[0][1].time, 240);
 		eeprom_busy_wait();
-		eeprom_write_word(&EEtable[3].EEaddress,(uint16_t)(&EEtemp[13]));
+		eeprom_write_word(&EEtemp[0][1].temp, 183<<2);
 		eeprom_busy_wait();
-		eeprom_write_byte(&EEtable[4].PTS,0);
+		eeprom_write_word(&EEtemp[0][2].time, 300);
 		eeprom_busy_wait();
-		eeprom_write_word(&EEtable[4].EEaddress,(uint16_t)(&EEtemp[16]));
+		eeprom_write_word(&EEtemp[0][2].temp, 225<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[0][3].time, 320);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[0][3].temp, 225<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[0][4].time, 450);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[0][4].temp, 25<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][0].time, 120);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][0].temp, 180<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][1].time, 240);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][1].temp, 217<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][2].time, 300);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][2].temp, 250<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][3].time, 330);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][3].temp, 250<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][4].time, 450);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[1][4].temp, 25<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[2][0].time, 120);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[2][0].temp, 125<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[2][1].time, 43200);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[2][1].temp, 125<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[2][2].time, 43260);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[2][2].temp, 25<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[3][0].time, 120);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[3][0].temp, 145<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[3][1].time, 3600);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[3][1].temp, 145<<2);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[3][2].time, 3660);
+		eeprom_busy_wait();
+		eeprom_write_word(&EEtemp[3][2].temp, 25<<2);
 
 		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[0].time, 120);
+		eeprom_write_word(&K_I, 20);
 		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[0].temp, 150<<2);
+		eeprom_write_word(&K_P, 3);
 		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[1].time, 240);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[1].temp, 183<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[2].time, 300);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[2].temp, 225<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[3].time, 320);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[3].temp, 225<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[4].time, 450);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[4].temp, 25<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[5].time, 120);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[5].temp, 180<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[6].time, 240);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[6].temp, 217<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[7].time, 300);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[7].temp, 250<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[8].time, 330);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[8].temp, 250<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[9].time, 450);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[9].temp, 25<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[10].time, 120);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[10].temp, 125<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[11].time, 43200);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[11].temp, 125<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[12].time, 43260);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[12].temp, 25<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[13].time, 120);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[13].temp, 145<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[14].time, 3600);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[14].temp, 145<<2);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[15].time, 3660);
-		eeprom_busy_wait();
-		eeprom_write_word(&EEtemp[15].temp, 25<<2);
+		eeprom_write_word(&K_D, 50);
 
 	}
 	
@@ -140,8 +144,9 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 {
 	static uint8_t point = 0;
 	static uint8_t points = 0;
-	static uint16_t eetable_ptr;
-	
+	static uint16_t next_time;
+	static uint16_t next_temp;
+
 	if(table_number > 9)
 		return(0);
 	if(points == 0)
@@ -149,9 +154,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 		{		
 			eeprom_busy_wait();
-			points = eeprom_read_byte((uint8_t*)&(EEtable[table_number].PTS));
-			eeprom_busy_wait();
-			eetable_ptr = eeprom_read_word((uint16_t*)&(EEtable[table_number].EEaddress));
+			points = eeprom_read_byte((uint8_t*)&(EEtable[table_number]));
 		}
 		next_time = 0;
 		next_temp = 25<<2;
@@ -172,11 +175,10 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		last_time = next_time;
 		last_temp = next_temp;
 		eeprom_busy_wait();
-		next_time = eeprom_read_word((uint16_t*)eetable_ptr);
+		next_time = eeprom_read_word(EEtemp[table_number][point].time);
 		eeprom_busy_wait();
-		next_temp = eeprom_read_word((uint16_t*)(eetable_ptr + 2));
+		next_temp = eeprom_read_word(EEtemp[table_number][point].temp);
 		SR = (int16_t)(((int32_t)(next_temp - last_temp)<<7)/(next_time - last_time));
-		eetable_ptr += 4;
 		point++;
 		if(Status_com & DEBUG)
 		{
@@ -190,4 +192,30 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 	
 	return((uint16_t)(((int32_t)(time-last_time) * SR)>>7) + last_temp);
 	
+}
+
+void EE_save_pid(pidData_t *pid_st)
+{
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+	{
+		eeprom_busy_wait();
+		eeprom_write_word(&K_I, pid_st->I_Factor);
+		eeprom_busy_wait();
+		eeprom_write_word(&K_P, pid_st->P_Factor);
+		eeprom_busy_wait();
+		eeprom_write_word(&K_D, pid_st->D_Factor);
+	}
+}
+
+void EE_load_pid(pidData_t *pid_st)
+{
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+	{
+		eeprom_busy_wait();
+		pid_st->I_Factor = eeprom_read_word(&K_I);
+		eeprom_busy_wait();
+		pid_st->P_Factor = eeprom_read_word(&K_P);
+		eeprom_busy_wait();
+		pid_st->D_Factor = eeprom_read_word(&K_D);
+	}
 }

@@ -21,12 +21,12 @@
 extern uint8_t Status_task, Status_com;
 //extern uint16_t Temp1;
 
-extern PGM_P Pbsn;
-extern PGM_P Pbfree;
-extern PGM_P Baking;
-extern PGM_P Drying;
-extern PGM_P User;
-extern PGM_P Manual;
+extern prog_char Pbsn[];
+extern prog_char Pbfree[];
+extern prog_char Baking[];
+extern prog_char Drying[];
+extern prog_char User[];
+extern prog_char Manual[];
 
 void task_init(void);
 

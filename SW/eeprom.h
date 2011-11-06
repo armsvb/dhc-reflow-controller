@@ -15,7 +15,7 @@
 #include <stdint.h>
 
 #include <avr/eeprom.h>
-
+#include "pid.h"
 
 /* fix for eclipse - remove for final version */
 #undef EEMEM
@@ -40,5 +40,10 @@ typedef struct TABLE
 void EE_init_table(void);
 
 uint16_t EE_get_temp(uint16_t time, uint8_t table_number);
+
+void EE_save_pid(pidData_t *pid_st);
+
+void EE_load_pid(pidData_t *pid_st);
+
 
 #endif /* EEPROM_H_ */
