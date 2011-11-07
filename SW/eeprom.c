@@ -147,6 +147,15 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 	static uint16_t next_time;
 	static uint16_t next_temp;
 
+  if(time == 0)        // if time 0 - reset.
+  {
+    point = 0;
+    points = 0;
+    SR = 0;
+    next_time = 0;
+    next_temp = 25<<2;
+  } 
+  
 	if(table_number > 9)
 		return(0);
 	if(points == 0)
