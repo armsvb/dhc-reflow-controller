@@ -80,6 +80,7 @@ void task_init(void)
 	Time = 0;
 	EE_init_table();
 	pid_Init(&PidData);
+	EE_get_temp(0,0);
 
 }
 
@@ -172,8 +173,11 @@ void task_no_usb(void)
 				temp_local = PTemp;
 			else
 				temp_local = EE_get_temp(Time, Table);
-			Heat0 = pid_Controller(temp_local, Temp1, &PidData);
-			Heat1 = Heat0;
+			if(temp_local)
+			{
+				Heat0 = pid_Controller(temp_local, Temp1, &PidData);
+				Heat1 = Heat0;
+			}
 			if(Is_device_enumerated())
 			{
 				pprintf_P(PSTR("D "), USB_DEF);
@@ -222,6 +226,8 @@ void task_no_usb(void)
 		HEAT1_OFF;
 		HEAT2_OFF;
 		Time = 0;
+		EE_get_temp(0,0);
+
 	}
 
 //	if (Status_task & TASK_MENU)

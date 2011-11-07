@@ -130,9 +130,9 @@ void EE_init_table(void)
 		eeprom_write_word(&EEtemp[3][2].temp, 25<<2);
 
 		eeprom_busy_wait();
-		eeprom_write_word(&K_I, 20);
+		eeprom_write_word(&K_I, 250);
 		eeprom_busy_wait();
-		eeprom_write_word(&K_P, 3);
+		eeprom_write_word(&K_P, 4);
 		eeprom_busy_wait();
 		eeprom_write_word(&K_D, 50);
 
@@ -144,8 +144,6 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 {
 	static uint8_t point = 0;
 	static uint8_t points = 0;
-	static uint16_t next_time;
-	static uint16_t next_temp;
 
   if(time == 0)        // if time 0 - reset.
   {
@@ -154,6 +152,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
     SR = 0;
     next_time = 0;
     next_temp = 25<<2;
+	return(0);
   } 
   
 	if(table_number > 9)
@@ -164,6 +163,8 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		{		
 			eeprom_busy_wait();
 			points = eeprom_read_byte((uint8_t*)&(EEtable[table_number]));
+//test			
+			printnum(points,USB_DEF);
 		}
 		next_time = 0;
 		next_temp = 25<<2;
@@ -184,17 +185,20 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		last_time = next_time;
 		last_temp = next_temp;
 		eeprom_busy_wait();
-		next_time = eeprom_read_word(EEtemp[table_number][point].time);
+		next_time = eeprom_read_word((uint16_t*)&EEtemp[table_number][point].time);
 		eeprom_busy_wait();
-		next_temp = eeprom_read_word(EEtemp[table_number][point].temp);
+		next_temp = eeprom_read_word((uint16_t*)&EEtemp[table_number][point].temp);
 		SR = (int16_t)(((int32_t)(next_temp - last_temp)<<7)/(next_time - last_time));
 		point++;
+//test
 		if(Status_com & DEBUG)
 		{
 			pprintf_P(PSTR("Setting: "), USB_DEF);
 			printnum(next_time, USB_DEF);
 			usb_putchar('\t');
 			printnum(next_temp>>2, USB_DEF);
+			usb_putchar('\t');
+			printnum(SR, USB_DEF);
 			usb_newline();
 		}
 	}
