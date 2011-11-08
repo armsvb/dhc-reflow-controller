@@ -130,7 +130,7 @@ void EE_init_table(void)
 		eeprom_write_word(&EEtemp[3][2].temp, 25<<2);
 
 		eeprom_busy_wait();
-		eeprom_write_word(&K_I, 250);
+		eeprom_write_word(&K_I, 100);
 		eeprom_busy_wait();
 		eeprom_write_word(&K_P, 4);
 		eeprom_busy_wait();
@@ -166,6 +166,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 //test			
 			printnum(points,USB_DEF);
 		}
+		point = 0;
 		next_time = 0;
 		next_temp = 25<<2;
 		SR = 0;
@@ -173,7 +174,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 	
 	if(time >= next_time)
 	{
-		if(point == points + 1)		//if last time point is reached
+		if(point == points)		//if last time point is reached
 		{
 			Status_task &= ~TASK_GO;			// stop heating
 			point = 0;
@@ -188,7 +189,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		next_time = eeprom_read_word((uint16_t*)&EEtemp[table_number][point].time);
 		eeprom_busy_wait();
 		next_temp = eeprom_read_word((uint16_t*)&EEtemp[table_number][point].temp);
-		SR = (int16_t)(((int32_t)(next_temp - last_temp)<<7)/(next_time - last_time));
+		SR = (int16_t)((((int32_t)next_temp - last_temp)<<7)/(next_time - last_time));
 		point++;
 //test
 		if(Status_com & DEBUG)
