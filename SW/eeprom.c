@@ -173,7 +173,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 	
 	if(time >= next_time)
 	{
-		if(point == points)		//if last time point is reached
+		if(point == points + 1)		//if last time point is reached
 		{
 			Status_task &= ~TASK_GO;			// stop heating
 			point = 0;
