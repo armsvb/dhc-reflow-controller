@@ -220,7 +220,6 @@ void GLCD_UpdateDisplay(void)
 	
 	uint8_t page=0;
 
-<<<<<<< HEAD
 	for (i=0; i<8; i++)
 	{
 		GLCD_Setxy(0,i*8);
@@ -228,12 +227,6 @@ void GLCD_UpdateDisplay(void)
 		{
 			GLCD_Send_data(1,&(GLCD_buffer[i][j]));
 		}
-=======
-  	for (page = 0; page < 8; page++) 						/* loop on the 8 pages */
-   	{
-//  		bo9864_setxy(0,page<<3); 							/* Set the page on left controller*/
-//		bo9864_data_write(0,98,GLCD_buffer);
->>>>>>> parent of 40279c3... updated x size of display - need to change it to define in .h
 	}
 }
 
@@ -248,6 +241,7 @@ void GLCD_Clr_Buffer(void)
 			GLCD_buffer[j]=0;
 		}
 }
+
 #endif
 //------------------------------------------------------------------------------
 

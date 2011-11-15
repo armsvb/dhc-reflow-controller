@@ -85,7 +85,7 @@ SRC = $(TARGET).c spi.c max6675.c routines.c encoder.c pid.c eeprom.c usb/start_
 SRC += usb.c usb/usb_drv.c usb/usb_descriptors.c 
 SRC += usb/usb_standard_request.c usb/usb_specific_request.c 
 SRC += eadogs.c spi_sw.c 
-#SRC += glcd.c font.c 
+SRC += glcd.c font.c 
 
 # List C++ source files here. (C dependencies are automatically generated.)
 CPPSRC = 

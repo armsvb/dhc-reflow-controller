@@ -12,7 +12,7 @@
 #include "pwm.h"
 #include "routines.h"
 #include "encoder.h"
-//#include "glcd.h"
+#include "glcd.h"
 #include "eadogs.h"
 #include "spi_sw.h"
 #include "usb.h"
@@ -42,12 +42,12 @@ int main(void)
 {
 	
 	HW_Init();
-//	GLCD_Init();
-	GLCD_CD_PORT &= ~(_BV(DISP_CD));				//Clear data
-	GLCD_CD_DDR |= _BV(DISP_CD);					//set data port to output - reset low
-	GLCD_CS_PORT &= ~(_BV(DISP_CS));				//Clear data - external pullup or data low
-	GLCD_CS_DDR &= ~(_BV(DISP_CS));				// external pullup
-	Spi_sw_Init();
+	GLCD_Init();
+//	GLCD_CD_PORT &= ~(_BV(DISP_CD));				//Clear data
+//	GLCD_CD_DDR |= _BV(DISP_CD);					//set data port to output - reset low
+//	GLCD_CS_PORT &= ~(_BV(DISP_CS));				//Clear data - external pullup or data low
+//	GLCD_CS_DDR &= ~(_BV(DISP_CS));				// external pullup
+//	Spi_sw_Init();
 
 	USB_Init_hw();
 	Enc_Init();

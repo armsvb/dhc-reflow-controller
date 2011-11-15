@@ -12,7 +12,7 @@
 #include "pwm.h"
 #include "usb.h"
 #include "pid.h"
-//#include "glcd.h"
+#include "glcd.h"
 #include "max6675.h"
 #include "encoder.h"
 #include "eeprom.h"
@@ -199,24 +199,7 @@ void task_no_usb(void)
 				}
 				usb_newline();
 			}
-//			GLCD_Clr();
-//			GLCD_Setxy(0,0);
-//			switch(Table)
-//			{
-//				case 0:	pprintf_P(Pbsn, LCD_DEF);
-//						break;
-//				case 1: pprintf_P(Pbfree, LCD_DEF);
-//						break;
-//				case 2: pprintf_P(Baking, LCD_DEF);
-//						break;
-//				case 3: pprintf_P(Drying, LCD_DEF);
-//						break;
-//				case 11: pprintf_P(Manual, LCD_DEF);
-//						break;
-//				default: pprintf_P(User, LCD_DEF);
-//						break;
-//			}
-//				pprintf_P(PSTR("/n"), LCD_DEF);
+
 		}
 	}
 	else
@@ -260,6 +243,32 @@ void task_no_usb(void)
 		}
 		menu = 0;
 	}
+	
+//	if(PCINT1_count2 == 50)
+//	{
+//		PCINT1_count2 = 0;
+//		GLCD_Clr();
+//		GLCD_Setxy(0,0);
+//		switch(Table)
+//		{
+//			case 0:	pprintf_P(Pbsn, LCD_DEF);
+//					break;
+//			case 1: pprintf_P(Pbfree, LCD_DEF);
+//					break;
+//			case 2: pprintf_P(Baking, LCD_DEF);
+//					break;
+//			case 3: pprintf_P(Drying, LCD_DEF);
+//					break;
+//			case 11: pprintf_P(Manual, LCD_DEF);
+//					break;
+//			default: pprintf_P(User, LCD_DEF);
+//					printnum(PTemp, LCD_DEF);
+//					break;
+//		}
+//		pprintf_P(PSTR("\n"), LCD_DEF);		
+//		printnum(Temp1, LCD_DEF);
+//		pprintf_P(PSTR("\n"), LCD_DEF);		
+//	}
 
 }
 
