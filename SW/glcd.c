@@ -257,7 +257,7 @@ void GLCD_Clr(void)
 	for (i=0; i<8; i++)
 	{
 		eadogs_setxy(0,i);
-		for(j=0; j<102; j++)
+		for(j=0; j<132; j++)
 		{
 			eadogs_data_write(0,1);
 		}

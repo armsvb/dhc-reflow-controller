@@ -92,7 +92,7 @@ void eadogs_init_glcd(void)
 	for(y=0; y<8; y++)
 	{
 		eadogs_setxy(0,y);
-		for(x=0; x<102; x++)
+		for(x=0; x<132; x++)
 		{
 			eadogs_data_write(0,1);
 		}

@@ -81,7 +81,10 @@ void task_init(void)
 	EE_init_table();
 	pid_Init(&PidData);
 	EE_get_temp(0,0);
-
+//_delay_ms(1000);
+//pprintf_P(Pbsn, USB_DEF);
+//_delay_ms(1000);
+//pprintf_P(Pbfree, USB_DEF);
 }
 
 void task(void)
@@ -90,7 +93,7 @@ void task(void)
 //	static uint32_t temp0_local=0;
 	static uint32_t temp1_local=0;
 	
-	if(INT0_count == 14) 			//temp average
+	if(INT0_count >= 14) 			//temp average
 	{
 		INT0_count = 0;
 //		temp0_local += MAX_Read_temp(0);
@@ -244,32 +247,32 @@ void task_no_usb(void)
 		menu = 0;
 	}
 	
-	if(PCINT1_count2 == 50)
+	if(PCINT1_count2 >= 50)
 	{
 		PCINT1_count2 = 0;
 //		GLCD_Clr();
 		GLCD_Locate(0,0);
-		switch(Table)
-		{
-			case 0:	pprintf_P(Pbsn, LCD_DEF);
-					break;
-			case 1: pprintf_P(Pbfree, LCD_DEF);
-					break;
-			case 2: pprintf_P(Baking, LCD_DEF);
-					break;
-			case 3: pprintf_P(Drying, LCD_DEF);
-					break;
-			case 11: pprintf_P(Manual, LCD_DEF);
-					break;
-			default: pprintf_P(User, LCD_DEF);
-					printnum(PTemp, LCD_DEF);
-					break;
-		}
-		pprintf_P(PSTR("\n"), LCD_DEF);		
-		printnum(Temp1>>2, LCD_DEF);
-		pprintf_P(PSTR("."), LCD_DEF);
-		printnum((Temp1&0x0003)*25, LCD_DEF);
-		pprintf_P(PSTR("\n"), LCD_DEF);		
+//		switch(Table)
+//		{
+//			case 0:	pprintf_P(Pbsn, LCD_DEF);
+//					break;
+//			case 1: pprintf_P(Pbfree, LCD_DEF);
+//					break;
+//			case 2: pprintf_P(Baking, LCD_DEF);
+//					break;
+//			case 3: pprintf_P(Drying, LCD_DEF);
+//					break;
+//			case 11: pprintf_P(Manual, LCD_DEF);
+//					break;
+//			default: pprintf_P(User, LCD_DEF);
+//					printnum(PTemp, LCD_DEF);
+//					break;
+//		}
+//		pprintf_P(PSTR("\n"), LCD_DEF);		
+//		printnum(Temp1>>2, LCD_DEF);
+//		pprintf_P(PSTR("."), LCD_DEF);
+//		printnum((Temp1&0x0003)*25, LCD_DEF);
+//		pprintf_P(PSTR("\n"), LCD_DEF);		
 	}
 
 }
