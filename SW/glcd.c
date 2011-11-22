@@ -317,6 +317,7 @@ void GLCD_Putchar(uint8_t Char, FONT_DEF *toto)
 	{
 		data_char = pgm_read_byte((toto->FontTable) + ((Char - (toto->O))*(toto->W)*UpperCharPointer) + (z*UpperCharPointer));
 		eadogs_data_write(data_char,1);
+		z++;
 	}
 
 
@@ -337,7 +338,7 @@ void GLCD_Locate (uint8_t Column, uint8_t Line)
 {
 	GLCD_txt_pos.X = Column;
 	GLCD_txt_pos.Y = Line;
-	eadogs_setxy(Column, Line);
+	eadogs_setxy(Column+30, Line);
 }
 
 //------------------------------------------------------------------------------

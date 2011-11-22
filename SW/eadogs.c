@@ -97,6 +97,8 @@ void eadogs_init_glcd(void)
 			eadogs_data_write(0,1);
 		}
 	}
+	eadogs_setxy(0,0);
+	
 }
 
 //-----------------------------------------------------------

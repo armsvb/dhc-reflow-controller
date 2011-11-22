@@ -269,9 +269,9 @@ void task_no_usb(void)
 //					break;
 //		}
 //		pprintf_P(PSTR("\n"), LCD_DEF);		
-//		printnum(Temp1>>2, LCD_DEF);
-//		pprintf_P(PSTR("."), LCD_DEF);
-//		printnum((Temp1&0x0003)*25, LCD_DEF);
+		printnum(Temp1>>2, LCD_DEF);
+		pprintf_P(PSTR("."), LCD_DEF);
+		printnum((Temp1&0x0003)*25, LCD_DEF);
 //		pprintf_P(PSTR("\n"), LCD_DEF);		
 	}
 
@@ -283,6 +283,8 @@ void task_no_usb(void)
 void task_with_usb()
 {
 	static uint8_t command[10];
+	uint8_t y,x;
+
 	if(usb_test_hit())
 	{
 		while(rx_counter)
@@ -373,6 +375,19 @@ void task_with_usb()
 						TCCR1B = 0;				// stop timer 1
 						TIMSK0 = 0;				// stop interrupt from timer 0
 						goto_boot();
+						break;
+			case 'c':
+						GLCD_Clr();
+						break;
+			case 'C':
+						for(y=0; y<8; y++)
+						{
+							eadogs_setxy(0,y);
+							for(x=0; x<132; x++)
+							{
+								eadogs_data_write(0,1);
+							}
+						}
 						break;
 			case 'd':
 			case 'D':	if(command[1]==0x0d)
