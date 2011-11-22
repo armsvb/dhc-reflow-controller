@@ -35,9 +35,10 @@ FONT_DEF *GLCD_FONT;
 void GLCD_Init(void)
 {
 	eadogs_init_glcd();
-	GLCD_FONT = &Font_System5x8;
+	GLCD_FONT = &Font_System4x7;
 //	stdout = stderr = &glcd_str; // setup streams
-	GLCD_Clr();
+//	GLCD_Clr();
+	GLCD_Locate(0,0);
 }
 
 //----------------------------------------------------------
@@ -248,20 +249,20 @@ void GLCD_Clr_Buffer(void)
 
 void GLCD_Clr(void)
 {
-#ifdef GLCD_BUFFER
-	GLCD_Clr_Buffer();
-	GLCD_UpdateDisplay();
-#else
-	uint8_t i,j,k=0;
+//#ifdef GLCD_BUFFER
+//	GLCD_Clr_Buffer();
+//	GLCD_UpdateDisplay();
+//#else
+	uint8_t i,j;
 	for (i=0; i<8; i++)
 	{
-		GLCD_Setxy(0,i*8);
+		eadogs_setxy(0,i);
 		for(j=0; j<102; j++)
 		{
-			GLCD_Send_data(1,&k);
+			eadogs_data_write(0,1);
 		}
 	}
-#endif
+//#endif
 }
 
 
@@ -278,118 +279,56 @@ void lcd_putchar(uint8_t Char)
 
 void GLCD_Putchar(uint8_t Char, FONT_DEF *toto)
 {
-	uint8_t CharColumn=0; 
 	uint8_t shift=0;
 	uint8_t UpperCharPointer=1;
-	uint8_t buffer[3][9];
-	uint8_t page, x, y, z;
-	uint8_t dist = 2;
-	uint32_t clmbuffer, clmmask = 0x000000ff;
+	uint8_t z;
+	uint8_t data_char;
 	
 /* test for carrier return or line feed in char */
 	
-	if (Char == '\n' || Char == '\r')
+	if (Char == '\n')
 	{
-		GLCD_txt_pos.Y += ((toto->H) + dist);
-		GLCD_txt_pos.X = 0;
+		GLCD_txt_pos.Y ++;
+		if(GLCD_txt_pos.Y == 8)
+			GLCD_txt_pos.Y = 0;
+		return;
 	}
-	else
+	if (Char == '\r')
 	{
+		GLCD_txt_pos.X = 0;
+		return;
+	}
+
 /* test for carrier return -> automatic wrap?? */
 
-		if (GLCD_txt_pos.X > (101 - (toto->W))) 
-		{	
-			GLCD_txt_pos.X = 0;
-			GLCD_txt_pos.Y += ((toto->H) + dist);
-		}
-		if (GLCD_txt_pos.Y > (63 - (toto->H))) 
+	if (GLCD_txt_pos.X > (101 - (toto->W))) 
+	{	
+		GLCD_txt_pos.X = 0;
+		GLCD_txt_pos.Y ++;
+		if (GLCD_txt_pos.Y == 8) 
 			GLCD_txt_pos.Y = 0;
+	}
 
-/* read out data from area of character */
-#ifdef GLCD_BUFFER
-		for(page = 0; page < ((toto->H)/5+1); page++)
-		{
-			y=(GLCD_txt_pos.Y + (page<<3))/8;
-			for(CharColumn = 0; CharColumn < (toto->W); CharColumn++)
-			{
-				x = GLCD_txt_pos.X + CharColumn;
-				buffer[page][CharColumn]=GLCD_buffer[x];
-			}
-		}
-#endif	
 	    	
 /* Draw a char in buffer */
-		CharColumn = 0;
-		shift = GLCD_txt_pos.Y % 8;
-		while (CharColumn < (toto->W))
-		{
-			clmbuffer = 0;
-			if((toto->H) > 8)
-			{
-				UpperCharPointer = 2;
-				clmbuffer = (uint32_t)pgm_read_byte_near((toto->FontTable) + ((Char - (toto->O))*(toto->W)*UpperCharPointer) + (CharColumn*UpperCharPointer) + 1);
-				clmbuffer = clmbuffer<<8;
-				clmmask = 0x000fff;
-			}
-			clmbuffer |= (uint32_t)pgm_read_byte_near((toto->FontTable) + ((Char - (toto->O))*(toto->W)*UpperCharPointer) + (CharColumn*UpperCharPointer));
-			if((toto->H)==6)
-			{
-				clmbuffer = clmbuffer>>2;
-				clmmask = 0x0000003f;
-			}
-			if((toto->H)==12)
-				clmbuffer = clmbuffer>>4;
-			
-			clmbuffer = clmbuffer<<(shift);
-			clmmask = clmmask<<(shift);
-			clmmask = ~clmmask;
-			for(page=0; page<3; page++)
-			{
-				buffer[page][CharColumn] &= (uint8_t)(clmmask>>(page*8));
-				buffer[page][CharColumn] |= (uint8_t)(clmbuffer>>(page*8));
-			}
-			//buffer[1][CharColumn] &= (uint8_t)(clmmask>>8);
-			//buffer[1][CharColumn] |= (uint8_t)(clmbuffer>>8);
-			//buffer[2][CharColumn] &= (uint8_t)(clmmask>>16);
-			//buffer[2][CharColumn] |= (uint8_t)(clmbuffer>>16);
-			CharColumn++;
-		}
+	z = 0;
+	eadogs_setxy(GLCD_txt_pos.X, GLCD_txt_pos.Y);
+	while (z < (toto->W))
+	{
+		data_char = pgm_read_byte((toto->FontTable) + ((Char - (toto->O))*(toto->W)*UpperCharPointer) + (z*UpperCharPointer));
+		eadogs_data_write(data_char,1);
+	}
 
-/* Insert a space after a char */	
-
-		buffer[0][CharColumn] &= (uint8_t)clmmask;
-		buffer[1][CharColumn] &= (uint8_t)(clmmask>>8);
-		buffer[2][CharColumn] &= (uint8_t)(clmmask>>16);
-		
 
 /* write char buffer back to display */
-		shift = GLCD_txt_pos.X + (toto->W);						//to save space in conditions
-		if (shift < 102) 										/* Check if this is the last char of the line */
-			z = (toto->W)+1;
-		else
-			z = toto->W;
+	shift = GLCD_txt_pos.X + (toto->W);						//to save space in conditions
+	if (shift < 102) 										/* Check if this is the last char of the line */
+		z = (toto->W)+1;
+	else
+		z = toto->W;
 
-		for(page = 0; page < ((toto->H)/5 + 1); page++)
-		{
-			y=(GLCD_txt_pos.Y + (page<<3))/8;
-			
-			for(CharColumn = 0; CharColumn < z; CharColumn++)
-			{
-				x = GLCD_txt_pos.X + CharColumn;
-#ifdef GLCD_BUFFER
-				GLCD_buffer[y][x] = buffer[page][CharColumn];
-#else
-				GLCD_Setxy(x,y*8);
-				GLCD_Send_data(1,&(buffer[page][CharColumn]));
-#endif
-			}
-		}
-
-		if (shift < 102) 		/* Check if this is the last char of the line */
-			GLCD_txt_pos.X = shift + 1;		//update position
-		else
-			GLCD_txt_pos.X = shift;			//update position
-	}
+	GLCD_txt_pos.X = shift + z;		//update position
+	
 }
 
 //------------------------------------------------------------------------------
@@ -398,6 +337,7 @@ void GLCD_Locate (uint8_t Column, uint8_t Line)
 {
 	GLCD_txt_pos.X = Column;
 	GLCD_txt_pos.Y = Line;
+	eadogs_setxy(Column, Line);
 }
 
 //------------------------------------------------------------------------------

@@ -244,31 +244,33 @@ void task_no_usb(void)
 		menu = 0;
 	}
 	
-//	if(PCINT1_count2 == 50)
-//	{
-//		PCINT1_count2 = 0;
+	if(PCINT1_count2 == 50)
+	{
+		PCINT1_count2 = 0;
 //		GLCD_Clr();
-//		GLCD_Setxy(0,0);
-//		switch(Table)
-//		{
-//			case 0:	pprintf_P(Pbsn, LCD_DEF);
-//					break;
-//			case 1: pprintf_P(Pbfree, LCD_DEF);
-//					break;
-//			case 2: pprintf_P(Baking, LCD_DEF);
-//					break;
-//			case 3: pprintf_P(Drying, LCD_DEF);
-//					break;
-//			case 11: pprintf_P(Manual, LCD_DEF);
-//					break;
-//			default: pprintf_P(User, LCD_DEF);
-//					printnum(PTemp, LCD_DEF);
-//					break;
-//		}
-//		pprintf_P(PSTR("\n"), LCD_DEF);		
-//		printnum(Temp1, LCD_DEF);
-//		pprintf_P(PSTR("\n"), LCD_DEF);		
-//	}
+		GLCD_Locate(0,0);
+		switch(Table)
+		{
+			case 0:	pprintf_P(Pbsn, LCD_DEF);
+					break;
+			case 1: pprintf_P(Pbfree, LCD_DEF);
+					break;
+			case 2: pprintf_P(Baking, LCD_DEF);
+					break;
+			case 3: pprintf_P(Drying, LCD_DEF);
+					break;
+			case 11: pprintf_P(Manual, LCD_DEF);
+					break;
+			default: pprintf_P(User, LCD_DEF);
+					printnum(PTemp, LCD_DEF);
+					break;
+		}
+		pprintf_P(PSTR("\n"), LCD_DEF);		
+		printnum(Temp1>>2, LCD_DEF);
+		pprintf_P(PSTR("."), LCD_DEF);
+		printnum((Temp1&0x0003)*25, LCD_DEF);
+		pprintf_P(PSTR("\n"), LCD_DEF);		
+	}
 
 }
 
@@ -477,8 +479,8 @@ void printnum(int16_t num, uint8_t device)
     {
 			if(device == USB_DEF)
 				usb_putchar('-');
-//			else
-//				lcd_putchar('-');
+			else
+				lcd_putchar('-');
             num = -num;
     }
     c = num / 10;
@@ -487,8 +489,8 @@ void printnum(int16_t num, uint8_t device)
 		
 	if (device == USB_DEF)
 		usb_putchar('0' + ((uint8_t) (num % 10)));
-//	else
-//		lcd_putchar('0' + ((uint8_t) (num % 10)));
+	else
+		lcd_putchar('0' + ((uint8_t) (num % 10)));
 }
 
 /*---------------------------------------------------*/
@@ -503,8 +505,8 @@ void pprintf_P(PGM_P txt_P, uint8_t device)
 	{
 		if(device == USB_DEF)
 			usb_putchar(c);
-//		else
-//			lcd_putchar(c);
+		else
+			lcd_putchar(c);
 	}
 }
 

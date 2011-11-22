@@ -54,6 +54,8 @@ void Spi_sw_Init(void)
 	SCLDDR &= ~(_BV(SCL));		// set SCL as input
 	SDAPORT &= ~(_BV(SDA));	// as input pulled Hi by external pull-up, as output Lo
 	SCLPORT &= ~(_BV(SCL));	// as input pulled Hi by external pull-up, as output Lo
+	SCLDDR |= _BV(SCL);			// set SCL as output (pull low)
+
 }
 
 //! Send a byte sequence on the I2C bus

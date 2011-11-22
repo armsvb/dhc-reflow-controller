@@ -54,17 +54,12 @@ void eadogs_cmd_write16(uint8_t cmd1, uint8_t cmd2, uint8_t cs) 					//writing 1
 //-----------------------------------------------------------
 
 
-void eadogs_data_write( uint16_t size, uint8_t *dataxx, uint8_t cs)
+void eadogs_data_write(uint8_t dataxx, uint8_t cs)
 {
 //	if(cs)
 		GLCD_CS_ASSERT;
 	GLCD_DATA;
-	while(size)
-	{
-		Spi_sw_Send8_t(*dataxx);
-		dataxx++;
-		size--;
-	}
+		Spi_sw_Send8_t(dataxx);
 	if(cs)
 		GLCD_CS_DEASSERT;
 }
@@ -74,8 +69,8 @@ void eadogs_data_write( uint16_t size, uint8_t *dataxx, uint8_t cs)
 
 void eadogs_init_glcd(void)
 {
-	uint16_t x = 0;
-	uint8_t y,i =0;
+	uint8_t x = 0;
+	uint8_t y;
 	
 	eadogs_init_port();
 	_delay_ms(100);
@@ -96,11 +91,10 @@ void eadogs_init_glcd(void)
 	eadogs_cmd_write(GLCD_ALL_ON,1);				//set all pixels off
 	for(y=0; y<8; y++)
 	{
-		eadogs_setxy(0,y*8);
+		eadogs_setxy(0,y);
 		for(x=0; x<102; x++)
 		{
-			eadogs_data_write(1,&i,1);
-			_delay_ms(1);
+			eadogs_data_write(0,1);
 		}
 	}
 }
@@ -109,12 +103,12 @@ void eadogs_init_glcd(void)
 
 void eadogs_setxy(uint8_t x, uint8_t y)
 {
-	if(x>131)
-		x=131;
-	if(y>63)
-		y=63;
+	if(x>101)
+		x=101;
+	if(y>7)
+		y=7;
 	
-	eadogs_cmd_write(GLCD_SET_Y | (y/8),0);
+	eadogs_cmd_write(GLCD_SET_Y | (y),0);
 	eadogs_cmd_write(GLCD_SET_XLSB | (x & 0x0F),0);
 	eadogs_cmd_write(GLCD_SET_XMSB | ((x & 0xF0)>>4),1);
 }

@@ -18,8 +18,8 @@ typedef struct GLCD_POS_
 //----------------- Function prototypes -------------------
 //---------------------------------------------------------
 
-#define GLCD_Setxy(x,y)		eadogs_setxy(x,y)
-#define GLCD_Send_data(x,y) 		eadogs_data_write(x,y,1)
+//#define GLCD_Setxy(x,y)		eadogs_setxy(x,y)
+//#define GLCD_Send_data(x,y) 		eadogs_data_write(x,y,1)
 
 void GLCD_Init(void);
 

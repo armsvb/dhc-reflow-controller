@@ -24,7 +24,7 @@ DATE		VERSION	REVISOR DESCRIPTION
 /* 			     DECLARATIONS / DEFINITIONS			       */
 /*******************************************************************************/
 
-#define FONT_5X8
+#define FONT_4X7
 
 /* EXTERN Function Prototype(s) */
 
@@ -37,8 +37,14 @@ typedef struct
 	uint8_t O;			/* ASCII char starting the table 	  */
 	prog_uint8_t *FontTable;        /* Font table start address in memory */
 } FONT_DEF;
-
+#ifdef FONT_3X6
 extern FONT_DEF Font_System3x6;
+#endif
+
+#ifdef FONT_4X7
+extern FONT_DEF Font_System4x7;
+#endif
+
 #ifdef FONT_5X8
 extern FONT_DEF Font_System5x8;
 #endif

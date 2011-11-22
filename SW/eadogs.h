@@ -98,11 +98,11 @@ typedef struct LCD_LOC
 //----------------------------------------------------------
 
 
-void eadogs_data_write(uint16_t size, uint8_t *data, uint8_t cs);
+void eadogs_data_write(uint8_t data, uint8_t cs);
 
 void eadogs_init_glcd(void);
 
-void eadogs_setxy(uint8_t, uint8_t);
+void eadogs_setxy(uint8_t x, uint8_t y);
 
 
 
