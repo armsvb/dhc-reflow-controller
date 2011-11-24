@@ -269,9 +269,9 @@ void task_no_usb(void)
 //					break;
 //		}
 //		pprintf_P(PSTR("\n"), LCD_DEF);		
-		printnum(Temp1>>2, LCD_DEF);
-		pprintf_P(PSTR("."), LCD_DEF);
-		printnum((Temp1&0x0003)*25, LCD_DEF);
+//		printnum(Temp1>>2, LCD_DEF);
+//		pprintf_P(PSTR("."), LCD_DEF);
+//		printnum((Temp1&0x0003)*25, LCD_DEF);
 //		pprintf_P(PSTR("\n"), LCD_DEF);		
 	}
 
