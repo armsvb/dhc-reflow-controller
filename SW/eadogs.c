@@ -59,7 +59,7 @@ void eadogs_data_write(uint8_t dataxx, uint8_t cs)
 //	if(cs)
 		GLCD_CS_ASSERT;
 	GLCD_DATA;
-		Spi_sw_Send8_t(dataxx);
+	Spi_sw_Send8_t(dataxx);
 	if(cs)
 		GLCD_CS_DEASSERT;
 }

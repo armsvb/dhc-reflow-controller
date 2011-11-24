@@ -250,7 +250,7 @@ void task(void)
 	{
 		PCINT1_count2 = 0;
 //		GLCD_Clr();
-		GLCD_Locate(0,0);
+//		GLCD_Locate(0,0);
 //		switch(Table)
 //		{
 //			case 0:	pprintf_P(Pbsn, LCD_DEF);

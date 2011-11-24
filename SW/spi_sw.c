@@ -17,6 +17,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <util/atomic.h>
 
 #include "spi_sw.h"
 
@@ -62,22 +63,24 @@ void Spi_sw_Init(void)
 void Spi_sw_Send8_t(uint8_t data2send)
 {
 	uint8_t i;
-	
-	// send the data
-	for (i=0;i<8;i++)
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
-		if(data2send & 0x80)
-			SPI_SDA_HI;
-		else	
-			SPI_SDA_LO;
+	// send the data
+		for (i=0;i<8;i++)
+		{
+			if(data2send & 0x80)
+				SPI_SDA_HI;
+			else	
+				SPI_SDA_LO;
 		
-		data2send = data2send << 1;
-		SPI_SCL_HI;
-		_delay_us(0.5);
-		SPI_SCL_LO;
-		_delay_us(0.5);
+			data2send = data2send << 1;
+			SPI_SCL_HI;
+			_delay_us(0.5);
+			SPI_SCL_LO;
+			_delay_us(0.5);
+		}
+		SPI_SDA_LO;					// clear data line and
 	}
-	SPI_SDA_LO;					// clear data line and
 	return;
 }
 
