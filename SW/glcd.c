@@ -272,12 +272,12 @@ void GLCD_Clr(void)
 //------------------------------------------------------------------------------
 
 
-void lcd_putchar(uint8_t Char)
-{
-	GLCD_Putchar(Char, GLCD_FONT);
-}
+//void lcd_putchar(uint8_t Char)
+//{
+//	GLCD_Putchar(Char, GLCD_FONT);
+//}
 
-void GLCD_Putchar(uint8_t Char, FONT_DEF *toto)
+void GLCD_Putchar(uint8_t Char)
 {
 	uint8_t shift=0;
 	uint8_t UpperCharPointer=1;
@@ -301,7 +301,7 @@ void GLCD_Putchar(uint8_t Char, FONT_DEF *toto)
 
 /* test for carrier return -> automatic wrap?? */
 
-	if (GLCD_txt_pos.X > (101 - (toto->W))) 
+	if (GLCD_txt_pos.X > (101 - (GLCD_FONT->W))) 
 	{	
 		GLCD_txt_pos.X = 0;
 		GLCD_txt_pos.Y ++;
@@ -313,20 +313,20 @@ void GLCD_Putchar(uint8_t Char, FONT_DEF *toto)
 /* Draw a char in buffer */
 	z = 0;
 	eadogs_setxy(GLCD_txt_pos.X, GLCD_txt_pos.Y);
-	while (z < (toto->W))
+	while (z < (GLCD_FONT->W))
 	{
-		data_char = pgm_read_byte((toto->FontTable) + ((Char - (toto->O))*(toto->W)*UpperCharPointer) + (z*UpperCharPointer));
+		data_char = pgm_read_byte((GLCD_FONT->FontTable) + ((Char - (GLCD_FONT->O))*(GLCD_FONT->W)*UpperCharPointer) + (z*UpperCharPointer));
 		eadogs_data_write(data_char,1);
 		z++;
 	}
 
 
 /* write char buffer back to display */
-	shift = GLCD_txt_pos.X + (toto->W);						//to save space in conditions
-	if (shift < 102) 										/* Check if this is the last char of the line */
-		z = (toto->W)+1;
-	else
-		z = toto->W;
+	shift = GLCD_txt_pos.X + (GLCD_FONT->W);	//to save space in conditions
+	z = GLCD_FONT->W;
+
+	if (shift < 102) 							// Check if this is the last char of the line
+		z++;
 
 	GLCD_txt_pos.X = shift + z;		//update position
 	

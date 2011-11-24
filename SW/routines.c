@@ -34,13 +34,11 @@ prog_char Manual[] = "Manual ctrl ";
 
 
 
-uint8_t Status_com, Status_task;
-static uint8_t I;
+uint8_t Status_com, Status_task, I;
 static uint8_t Heat0, Heat1;
 //static uint16_t Temp0;
 uint16_t Temp1;
 static uint16_t PTemp;
-static uint16_t a;
 volatile uint8_t INT0_count;
 volatile uint8_t PCINT1_count;
 volatile uint8_t PCINT1_count2;
@@ -48,7 +46,7 @@ static uint16_t Time;
 uint8_t Table;
 struct PID_DATA PidData;
 
-void task_no_usb(void);
+//void task_no_usb(void);
 void task_with_usb(void);
 
 //ovladanie kurenia metoda 1:
@@ -69,8 +67,6 @@ ISR(TIMER0_OVF_vect)
 void task_init(void)
 {
 	MAX_Init_hw();
-	I=0;
-	a=0;
 	Status_task=0;
 	Status_com=0;
 	INT0_count = 0;
@@ -92,6 +88,9 @@ void task(void)
 	static uint8_t i=0;
 //	static uint32_t temp0_local=0;
 	static uint32_t temp1_local=0;
+// from task_no_usb
+	uint8_t encoder, menu;
+	uint16_t temp_local;
 	
 	if(INT0_count >= 14) 			//temp average
 	{
@@ -121,16 +120,16 @@ void task(void)
 		LED1_OFF;
 	}
 	
-	task_no_usb();
-}
+//	task_no_usb();
+//}
 
 /*---------------------------------------------------*/
 /*--  task with functions if USB is not enumerated --*/
 /*---------------------------------------------------*/
-void task_no_usb(void)
-{
-	uint8_t encoder, menu;
-	uint16_t temp_local = 0;
+//void task_no_usb(void)
+//{
+//	uint8_t encoder, menu;
+//	uint16_t temp_local = 0;
 
 	encoder = Enc_GetKey(0);
 	switch(encoder)
@@ -498,7 +497,7 @@ void printnum(int16_t num, uint8_t device)
 			if(device == USB_DEF)
 				usb_putchar('-');
 			else
-				lcd_putchar('-');
+				GLCD_Putchar('-');
             num = -num;
     }
     c = num / 10;
@@ -508,7 +507,7 @@ void printnum(int16_t num, uint8_t device)
 	if (device == USB_DEF)
 		usb_putchar('0' + ((uint8_t) (num % 10)));
 	else
-		lcd_putchar('0' + ((uint8_t) (num % 10)));
+		GLCD_Putchar('0' + ((uint8_t) (num % 10)));
 }
 
 /*---------------------------------------------------*/
@@ -524,7 +523,7 @@ void pprintf_P(PGM_P txt_P, uint8_t device)
 		if(device == USB_DEF)
 			usb_putchar(c);
 		else
-			lcd_putchar(c);
+			GLCD_Putchar(c);
 	}
 }
 
