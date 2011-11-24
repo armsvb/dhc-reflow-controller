@@ -39,9 +39,9 @@ void GLCD_Clr(void);
 	void GLCD_Clr_Dot(uint8_t x, uint8_t y);
 #endif
 
-void lcd_putchar (uint8_t Char);
+//void lcd_putchar (uint8_t Char);
 
-void GLCD_Putchar (uint8_t Char, FONT_DEF *toto);
+void GLCD_Putchar (uint8_t Char);
 
 void GLCD_Locate (uint8_t Column, uint8_t Line);
 

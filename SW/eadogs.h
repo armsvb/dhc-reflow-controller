@@ -86,7 +86,7 @@ typedef struct LCD_LOC
 //					GLOBAL VARIABLES
 //----------------------------------------------------------
 #ifdef GLCD_BUFFER
-	extern uint8_t lcd_buffer[8][102];
+//	extern uint8_t lcd_buffer[8][102];
 #endif
 //extern PGM_P LOGO_LUT[9][132];
 //extern PGM_P ALPHA_LUT[26][5];

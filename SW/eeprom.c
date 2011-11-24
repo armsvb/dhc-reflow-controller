@@ -144,6 +144,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 {
 	static uint8_t point = 0;
 	static uint8_t points = 0;
+//	uint16_t last_time, last_temp;
 
   if(time == 0)        // if time 0 - reset.
   {
@@ -192,7 +193,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		SR = (int16_t)((((int32_t)next_temp - last_temp)<<7)/(next_time - last_time));
 		point++;
 //test
-		if(Status_com & DEBUG)
+/*		if(Status_com & DEBUG)
 		{
 			pprintf_P(PSTR("Setting: "), USB_DEF);
 			printnum(next_time, USB_DEF);
@@ -202,6 +203,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 			printnum(SR, USB_DEF);
 			usb_newline();
 		}
+*/
 	}
 	
 	return((uint16_t)(((int32_t)(time-last_time) * SR)>>7) + last_temp);
