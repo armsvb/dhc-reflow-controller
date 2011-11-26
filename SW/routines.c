@@ -77,10 +77,6 @@ void task_init(void)
 	EE_init_table();
 	pid_Init(&PidData);
 	EE_get_temp(0,0);
-//_delay_ms(1000);
-//pprintf_P(Pbsn, USB_DEF);
-//_delay_ms(1000);
-//pprintf_P(Pbfree, USB_DEF);
 }
 
 void task(void)
@@ -94,6 +90,7 @@ void task(void)
 	
 	if(INT0_count >= 14) 			//temp average
 	{
+		SPCR |= _BV(SPE);			//enable SPI
 		INT0_count = 0;
 //		temp0_local += MAX_Read_temp(0);
 		temp1_local += MAX_Read_temp(1);
@@ -107,6 +104,7 @@ void task(void)
 			i = 0;
 			LED_PORT = (LED_PORT & _BV(LED2)) ^ _BV(LED2);		//toggle LED2 
 		}
+		SPCR &= ~(_BV(SPE));			//disable SPI 
 	}
 
 
@@ -250,30 +248,32 @@ void task(void)
 	{
 		PCINT1_count2 = 0;
 //		GLCD_Clr();
-//		GLCD_Locate(0,0);
-//		switch(Table)
-//		{
-//			case 0:	pprintf_P(Pbsn, LCD_DEF);
-//					break;
-//			case 1: pprintf_P(Pbfree, LCD_DEF);
-//					break;
-//			case 2: pprintf_P(Baking, LCD_DEF);
-//					break;
-//			case 3: pprintf_P(Drying, LCD_DEF);
-//					break;
-//			case 11: pprintf_P(Manual, LCD_DEF);
-//					break;
-//			default: pprintf_P(User, LCD_DEF);
-//					printnum(PTemp, LCD_DEF);
-//					break;
-//		}
-//		pprintf_P(PSTR("\n"), LCD_DEF);		
-//		printnum(Temp1>>2, LCD_DEF);
-//		pprintf_P(PSTR("."), LCD_DEF);
-//		printnum((Temp1&0x0003)*25, LCD_DEF);
-//		pprintf_P(PSTR("\n"), LCD_DEF);		
+		GLCD_Locate(0,0);
+		switch(Table)
+		{
+			case 0:	
+					pprintf_P(Pbsn, LCD_DEF);
+					break;
+			case 1: 
+					pprintf_P(Pbfree, LCD_DEF);
+					break;
+			case 2: pprintf_P(Baking, LCD_DEF);
+					break;
+			case 3: pprintf_P(Drying, LCD_DEF);
+					break;
+			case 11: pprintf_P(Manual, LCD_DEF);
+					break;
+			default: pprintf_P(User, LCD_DEF);
+					printnum(PTemp, LCD_DEF);
+					break;
+		}
+		pprintf_P(PSTR("\n"), LCD_DEF);		
+		printnum(Temp1>>2, LCD_DEF);
+		pprintf_P(PSTR("."), LCD_DEF);
+		printnum((Temp1&0x0003)*25, LCD_DEF);
+		pprintf_P(PSTR("\n"), LCD_DEF);
 	}
-
+	return;
 }
 
 /*---------------------------------------------------*/
@@ -490,16 +490,16 @@ void task_with_usb()
 
 void printnum(int16_t num, uint8_t device)
 {
-    int16_t c;
+	int16_t c;
     
-    if (num < 0)
-    {
+	if (num < 0)
+	{
 			if(device == USB_DEF)
 				usb_putchar('-');
 			else
 				GLCD_Putchar('-');
-            num = -num;
-    }
+          num = -num;
+	}
     c = num / 10;
     if (c)
         printnum(c, device);
@@ -517,7 +517,7 @@ void printnum(int16_t num, uint8_t device)
 void pprintf_P(PGM_P txt_P, uint8_t device)
 {
     uint8_t c;
-   
+	
     while (c = pgm_read_byte(txt_P++))
 	{
 		if(device == USB_DEF)
@@ -525,6 +525,7 @@ void pprintf_P(PGM_P txt_P, uint8_t device)
 		else
 			GLCD_Putchar(c);
 	}
+	return;
 }
 
 /*---------------------------------------------------*/

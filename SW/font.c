@@ -109,7 +109,7 @@ FONT_DEF Font_System3x6  = {3, 6, 0x20, FontSystem3x6};
 #endif
 
 #ifdef FONT_4X7
-static uint8_t FontSystem4x7[] PROGMEM = {
+uint8_t FontSystem5x7[] PROGMEM = {
 	0x00, 0x00, 0x00, 0x00, 0x00,	//space
 	0x00, 0x00, 0xBE, 0x00, 0x00, 	//!
 	0x00, 0x06, 0x00, 0x06, 0x00, 	//"
@@ -207,7 +207,7 @@ static uint8_t FontSystem4x7[] PROGMEM = {
 	0x04, 0x02, 0x04, 0x08, 0x04,	//~
 };
 
-FONT_DEF Font_System4x7  = {4, 7, 0x20, FontSystem4x7};
+//FONT_DEF Font_System4x7  = {5, 7, 0x20, FontSystem4x7};
 #endif
 
 #ifdef FONT_5X8

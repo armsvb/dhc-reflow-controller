@@ -25,7 +25,7 @@ GLCD_POS GLCD_txt_pos;
 
 //FILE glcd_str = FDEV_SETUP_STREAM(glcd_putchar, NULL, _FDEV_SETUP_WRITE);
 
-FONT_DEF *GLCD_FONT;
+//FONT_DEF *GLCD_FONT;
 
 
 //----------------------------------------------------------
@@ -35,7 +35,7 @@ FONT_DEF *GLCD_FONT;
 void GLCD_Init(void)
 {
 	eadogs_init_glcd();
-	GLCD_FONT = &Font_System4x7;
+//	GLCD_FONT = &Font_System4x7;
 //	stdout = stderr = &glcd_str; // setup streams
 //	GLCD_Clr();
 	GLCD_Locate(0,0);
@@ -262,6 +262,7 @@ void GLCD_Clr(void)
 			eadogs_data_write(0,1);
 		}
 	}
+	return;
 //#endif
 }
 
@@ -277,59 +278,62 @@ void GLCD_Clr(void)
 //	GLCD_Putchar(Char, GLCD_FONT);
 //}
 
-void GLCD_Putchar(uint8_t Char)
+void GLCD_Putchar(uint8_t c)
 {
 	uint8_t shift=0;
-	uint8_t UpperCharPointer=1;
 	uint8_t z;
 	uint8_t data_char;
 	
 /* test for carrier return or line feed in char */
 	
-	if (Char == '\n')
+	if (c == '\n')
 	{
 		GLCD_txt_pos.Y ++;
 		if(GLCD_txt_pos.Y == 8)
 			GLCD_txt_pos.Y = 0;
+		GLCD_txt_pos.X = 0;
+		eadogs_setxy(0,GLCD_txt_pos.Y);
 		return;
 	}
-	if (Char == '\r')
+	if (c == '\r')
 	{
 		GLCD_txt_pos.X = 0;
+		eadogs_setxy(0,GLCD_txt_pos.Y);
 		return;
 	}
 
 /* test for carrier return -> automatic wrap?? */
 
-	if (GLCD_txt_pos.X > (101 - (GLCD_FONT->W))) 
+	if (GLCD_txt_pos.X > (101 - 5)) 
 	{	
 		GLCD_txt_pos.X = 0;
 		GLCD_txt_pos.Y ++;
 		if (GLCD_txt_pos.Y == 8) 
 			GLCD_txt_pos.Y = 0;
+		eadogs_setxy(0,GLCD_txt_pos.Y);
 	}
 
 	    	
 /* Draw a char in buffer */
 	z = 0;
-	eadogs_setxy(GLCD_txt_pos.X, GLCD_txt_pos.Y);
-	while (z < (GLCD_FONT->W))
+	while (z < 5)
 	{
-		data_char = pgm_read_byte((GLCD_FONT->FontTable) + ((Char - (GLCD_FONT->O))*(GLCD_FONT->W)*UpperCharPointer) + (z*UpperCharPointer));
-		eadogs_data_write(data_char,1);
+		data_char = pgm_read_byte(FontSystem5x7 + ((c - 0x20)*5) + z);
+		eadogs_data_write(data_char,0);
 		z++;
 	}
-
+	eadogs_data_write(0x00,1);
 
 /* write char buffer back to display */
-	shift = GLCD_txt_pos.X + (GLCD_FONT->W);	//to save space in conditions
-	z = GLCD_FONT->W;
+	shift = GLCD_txt_pos.X + 5;	//to save space in conditions
+	z = 5;
 
 	if (shift < 102) 							// Check if this is the last char of the line
 		z++;
 
 	GLCD_txt_pos.X = shift + z;		//update position
 	
+	return;
 }
 
 //------------------------------------------------------------------------------
@@ -338,7 +342,8 @@ void GLCD_Locate (uint8_t Column, uint8_t Line)
 {
 	GLCD_txt_pos.X = Column;
 	GLCD_txt_pos.Y = Line;
-	eadogs_setxy(Column+30, Line);
+	eadogs_setxy(Column, Line);
+	return;
 }
 
 //------------------------------------------------------------------------------
@@ -349,7 +354,8 @@ void GLCD_Locate (uint8_t Column, uint8_t Line)
 //	return 0;
 //}
 
-void GLCD_Set_Font(FONT_DEF *toto)
-{
-	GLCD_FONT = toto;
-}
+//void GLCD_Set_Font(FONT_DEF *toto)
+//{
+//	GLCD_FONT = toto;
+//	return;
+//}

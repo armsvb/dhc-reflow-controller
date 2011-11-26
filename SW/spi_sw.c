@@ -63,7 +63,8 @@ void Spi_sw_Init(void)
 void Spi_sw_Send8_t(uint8_t data2send)
 {
 	uint8_t i;
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+//	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+	ATOMIC_BLOCK(ATOMIC_FORCEON)
 	{
 	// send the data
 		for (i=0;i<8;i++)
@@ -75,9 +76,9 @@ void Spi_sw_Send8_t(uint8_t data2send)
 		
 			data2send = data2send << 1;
 			SPI_SCL_HI;
-			_delay_us(0.5);
+			_delay_us(1);
 			SPI_SCL_LO;
-			_delay_us(0.5);
+//			_delay_us(0.5);
 		}
 		SPI_SDA_LO;					// clear data line and
 	}

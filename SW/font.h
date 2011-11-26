@@ -42,7 +42,8 @@ extern FONT_DEF Font_System3x6;
 #endif
 
 #ifdef FONT_4X7
-extern FONT_DEF Font_System4x7;
+//extern FONT_DEF Font_System5x7;
+extern prog_uint8_t FontSystem5x7[];
 #endif
 
 #ifdef FONT_5X8

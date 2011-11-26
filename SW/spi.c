@@ -16,12 +16,12 @@ volatile uint8_t spiTransferComplete;
 
 
 // SPI interrupt service handler
-#ifdef SPI_USEINT
 ISR(SPI_STC_vector)
 {
+	#ifdef SPI_USEINT
 	spiTransferComplete = TRUE;
+	#endif
 }
-#endif
 
 // access routines
 
@@ -43,7 +43,7 @@ void SPI_Init(void)
 	DORD = 0	// MSB first
 	SPE  = 1	// SPI enable		*/
 
-	SPCR = (_BV(MSTR)|_BV(SPE)|_BV(SPR0));
+	SPCR = (_BV(MSTR)|_BV(SPR0));
 	
 	temp = SPSR;						// clear status
 

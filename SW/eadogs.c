@@ -20,10 +20,11 @@
 void eadogs_init_port(void)
 {
 	GLCD_CD_PORT &= ~(_BV(DISP_CD));				//Clear data
-	GLCD_CD_DDR |= _BV(DISP_CD);					//set data port to output - reset low
+	GLCD_CD_DDR &= ~(_BV(DISP_CD));					//set data port to output - reset low
 	GLCD_CS_PORT &= ~(_BV(DISP_CS));				//Clear data - external pullup or data low
 	GLCD_CS_DDR &= ~(_BV(DISP_CS));				// external pullup
 	Spi_sw_Init();
+	return;
 }
 
 //-----------------------------------------------------------
@@ -32,20 +33,26 @@ void eadogs_init_port(void)
 void eadogs_cmd_write(uint8_t cmd, uint8_t cs) 					//writing 1cmd
 {
 	GLCD_CS_ASSERT;
-	GLCD_COMMAND;
+	GLCD_CD_DDR |= _BV(DISP_CD);
+	GLCD_CD_DDR |= _BV(DISP_CD);
 	Spi_sw_Send8_t(cmd);
 	if(cs)
 		GLCD_CS_DEASSERT;
+//	SPCR |= _BV(MSTR);
+	return;
 }
 
 void eadogs_cmd_write16(uint8_t cmd1, uint8_t cmd2, uint8_t cs) 					//writing 1cmd
 {
 	GLCD_CS_ASSERT;
-	GLCD_COMMAND;
+	GLCD_CD_DDR |= _BV(DISP_CD);
+	GLCD_CD_DDR |= _BV(DISP_CD);
 	Spi_sw_Send8_t(cmd1);
 	Spi_sw_Send8_t(cmd2);
 	if(cs)
 		GLCD_CS_DEASSERT;
+//	SPCR |= _BV(MSTR);
+	return;
 }
 
 
@@ -56,12 +63,12 @@ void eadogs_cmd_write16(uint8_t cmd1, uint8_t cmd2, uint8_t cs) 					//writing 1
 
 void eadogs_data_write(uint8_t dataxx, uint8_t cs)
 {
-//	if(cs)
-		GLCD_CS_ASSERT;
-	GLCD_DATA;
+	GLCD_CS_ASSERT;
+	GLCD_CD_DDR &= ~(_BV(DISP_CD));
 	Spi_sw_Send8_t(dataxx);
 	if(cs)
 		GLCD_CS_DEASSERT;
+	return;
 }
 
 
@@ -97,8 +104,7 @@ void eadogs_init_glcd(void)
 			eadogs_data_write(0,1);
 		}
 	}
-	eadogs_setxy(0,0);
-	
+	return;
 }
 
 //-----------------------------------------------------------
@@ -110,9 +116,10 @@ void eadogs_setxy(uint8_t x, uint8_t y)
 	if(y>7)
 		y=7;
 	
-	eadogs_cmd_write(GLCD_SET_Y | (y),0);
+	eadogs_cmd_write(GLCD_SET_Y | y,0);
 	eadogs_cmd_write(GLCD_SET_XLSB | (x & 0x0F),0);
 	eadogs_cmd_write(GLCD_SET_XMSB | ((x & 0xF0)>>4),1);
+	return;
 }
 
 //-----------------------------------------------------------

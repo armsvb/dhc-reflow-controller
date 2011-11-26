@@ -41,7 +41,7 @@ void GLCD_Clr(void);
 
 //void lcd_putchar (uint8_t Char);
 
-void GLCD_Putchar (uint8_t Char);
+void GLCD_Putchar (uint8_t c);
 
 void GLCD_Locate (uint8_t Column, uint8_t Line);
 
@@ -53,6 +53,6 @@ void GLCD_Locate (uint8_t Column, uint8_t Line);
 
 //int glcd_putchar(uint8_t c, FILE*);
 
-void GLCD_Set_Font(FONT_DEF*);
+//void GLCD_Set_Font(FONT_DEF*);
 
 #endif		//GLCD_H_
