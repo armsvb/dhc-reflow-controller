@@ -33,6 +33,7 @@ static uint16_t last_time;
 static uint16_t next_temp;
 static uint16_t last_temp;
 static int16_t SR;
+uint16_t EndTime;
 
 
 void EE_init_table(void)
@@ -164,8 +165,7 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		{		
 			eeprom_busy_wait();
 			points = eeprom_read_byte((uint8_t*)&(EEtable[table_number]));
-//test			
-			printnum(points,USB_DEF);
+			EndTime = eeprom_read_word((uint16_t*)&EEtemp[table_number][points-1].time);
 		}
 		point = 0;
 		next_time = 0;

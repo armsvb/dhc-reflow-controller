@@ -108,7 +108,7 @@ static uint8_t FontSystem3x6[] PROGMEM = {
 FONT_DEF Font_System3x6  = {3, 6, 0x20, FontSystem3x6};
 #endif
 
-#ifdef FONT_4X7
+#ifdef FONT_5X7
 uint8_t FontSystem5x7[] PROGMEM = {
 	0x00, 0x00, 0x00, 0x00, 0x00,	//space
 	0x00, 0x00, 0xBE, 0x00, 0x00, 	//!

@@ -304,7 +304,7 @@ void GLCD_Putchar(uint8_t c)
 
 /* test for carrier return -> automatic wrap?? */
 
-	if (GLCD_txt_pos.X > (101 - 5)) 
+	if (GLCD_txt_pos.X > 96) 
 	{	
 		GLCD_txt_pos.X = 0;
 		GLCD_txt_pos.Y ++;
@@ -325,14 +325,9 @@ void GLCD_Putchar(uint8_t c)
 	eadogs_data_write(0x00,1);
 
 /* write char buffer back to display */
-	shift = GLCD_txt_pos.X + 5;	//to save space in conditions
-	z = 5;
-
-	if (shift < 102) 							// Check if this is the last char of the line
-		z++;
-
-	GLCD_txt_pos.X = shift + z;		//update position
-	
+	GLCD_txt_pos.X += 5;				//to save space in conditions
+	if (GLCD_txt_pos.X < 101) 		// Check if this is the last char of the line
+		GLCD_txt_pos.X++;								//update position
 	return;
 }
 

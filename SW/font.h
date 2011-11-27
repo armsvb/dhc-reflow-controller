@@ -24,7 +24,7 @@ DATE		VERSION	REVISOR DESCRIPTION
 /* 			     DECLARATIONS / DEFINITIONS			       */
 /*******************************************************************************/
 
-#define FONT_4X7
+#define FONT_5X7
 
 /* EXTERN Function Prototype(s) */
 
@@ -41,7 +41,7 @@ typedef struct
 extern FONT_DEF Font_System3x6;
 #endif
 
-#ifdef FONT_4X7
+#ifdef FONT_5X7
 //extern FONT_DEF Font_System5x7;
 extern prog_uint8_t FontSystem5x7[];
 #endif

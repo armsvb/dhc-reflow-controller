@@ -36,6 +36,7 @@ typedef struct TABLE
 	uint8_t PTS;
 } table;
 
+extern uint16_t EndTime;
 
 void EE_init_table(void);
 

@@ -25,12 +25,17 @@
 //===				PGM constants			===
 //=============================================
 
-prog_char Pbsn[] = "PbSn solder";
+prog_char Pbsn[]   = "PbSn solder   ";
 prog_char Pbfree[] = "Pb-free solder";
-prog_char Baking[] = "Chip baking";
-prog_char Drying[] = "Film drying";
-prog_char User[] = "User profile";
+prog_char Baking[] = "Chip baking   ";
+prog_char Drying[] = "Film drying   ";
+prog_char User[]   = "User profile ";
 prog_char Manual[] = "Manual ctrl ";
+prog_char OO[] = "00";
+prog_char O[] = "0";
+prog_char dot[] = ".";
+prog_char dotdot[] = ":";
+prog_char tab[] = "\t";
 
 
 
@@ -52,6 +57,12 @@ void task_with_usb(void);
 //ovladanie kurenia metoda 1:
 //pocita interrupt od neusmerneho signalu = 50Hz
 //heater zapnuty tolko period, kolko je hodnota Heatx, zvysok do 100 vypnuty... 
+
+//=============================================
+//===				Interrupts  			===
+//=============================================
+
+
 ISR(PCINT1_vect)
 {
 //	if(!(HEAT_PIN & _BV(PHASE)))
@@ -59,10 +70,16 @@ ISR(PCINT1_vect)
 		PCINT1_count2++;
 }
 
+//=============================================
+
 ISR(TIMER0_OVF_vect)
 {
 	INT0_count++;
 }
+
+//=============================================
+//===				Functions   			===
+//=============================================
 
 void task_init(void)
 {
@@ -79,14 +96,16 @@ void task_init(void)
 	EE_get_temp(0,0);
 }
 
+//=============================================
+
 void task(void)
 {	
-	static uint8_t i=0;
+	static uint8_t i=0, h, m, s;
 //	static uint32_t temp0_local=0;
 	static uint32_t temp1_local=0;
 // from task_no_usb
 	uint8_t encoder, menu;
-	uint16_t temp_local;
+	uint16_t temp_local, eta;
 	
 	if(INT0_count >= 14) 			//temp average
 	{
@@ -132,18 +151,31 @@ void task(void)
 	encoder = Enc_GetKey(0);
 	switch(encoder)
 	{
-		case KEYLEFT:	if(Table != 0)
-							Table--;
-						if(Status_task & TASK_MAN)
-							Status_task &= ~TASK_MAN;
-						break;
-		case KEYRIGHT:	if(Table == 9)
+		case KEYLEFT:	if(!(Status_task & TASK_GO))
 						{
-							Status_task |= TASK_MAN;
-							Table = 10;
+							if(Table != 0)
+								Table--;
+							if(Status_task & TASK_MAN)
+								Status_task &= ~TASK_MAN;
 						}
 						else
-							Table++;
+						{
+							if(PTemp)
+								PTemp--;
+						}
+						break;
+		case KEYRIGHT:	if(!(Status_task & TASK_GO))
+						{
+							if(Table == 9)
+							{
+								Status_task |= TASK_MAN;
+								Table = 10;
+							}
+							else
+								Table++;
+						}
+						else
+							PTemp++;
 						break;
 		case KEYSWITCH:	
 						Status_task |= TASK_SW;
@@ -173,10 +205,46 @@ void task(void)
 				temp_local = PTemp;
 			else
 				temp_local = EE_get_temp(Time, Table);
+				eta = EndTime - Time;
 			if(temp_local)
 			{
 				Heat0 = pid_Controller(temp_local, Temp1, &PidData);
 				Heat1 = Heat0;
+			}
+			GLCD_Locate(0,3);
+			pprintf_P(PSTR("Preset:"),LCD_DEF);
+			printnum(temp_local>>2, LCD_DEF);
+			pprintf_P(dot, LCD_DEF);
+			printnum((temp_local&0x0003)*25, LCD_DEF);
+			pprintf_P(PSTR("`C \n\nHeater:"), LCD_DEF);
+			printnum(Heat0,LCD_DEF);
+			pprintf_P(PSTR("%  \nETA   :"), LCD_DEF);
+			if(eta)
+			{
+				s = eta%60;
+				m = eta/60;
+				h = m/60;
+				if(h<10)
+					pprintf_P(PSTR(" "),LCD_DEF);
+				printnum(h,LCD_DEF);
+				pprintf_P(dotdot,LCD_DEF);
+				if(m)
+				{
+					if(m < 10)
+						pprintf_P(O,LCD_DEF);
+					printnum(m,LCD_DEF);
+				}
+				else
+					pprintf_P(OO,LCD_DEF);
+				pprintf_P(dotdot,LCD_DEF);
+				if(s)
+				{
+					if(s < 10)
+						pprintf_P(O,LCD_DEF);
+					printnum(s,LCD_DEF);
+				}
+				else
+					pprintf_P(OO,LCD_DEF);
 			}
 			if(Is_device_enumerated())
 			{
@@ -261,17 +329,24 @@ void task(void)
 					break;
 			case 3: pprintf_P(Drying, LCD_DEF);
 					break;
+					
 			case 11: pprintf_P(Manual, LCD_DEF);
+					printnum(PTemp>>2, LCD_DEF);
 					break;
 			default: pprintf_P(User, LCD_DEF);
-					printnum(PTemp, LCD_DEF);
+					printnum((Table - 3), LCD_DEF);
 					break;
 		}
-		pprintf_P(PSTR("\n"), LCD_DEF);		
+		pprintf_P(PSTR("\n\n"), LCD_DEF);
+		pprintf_P(PSTR("Temp  :"),LCD_DEF);		
 		printnum(Temp1>>2, LCD_DEF);
-		pprintf_P(PSTR("."), LCD_DEF);
+		pprintf_P(dot, LCD_DEF);
 		printnum((Temp1&0x0003)*25, LCD_DEF);
-		pprintf_P(PSTR("\n"), LCD_DEF);
+		pprintf_P(PSTR("`C  \n"), LCD_DEF);
+		if(!(Status_task & TASK_GO))
+		{
+			pprintf_P(PSTR("                 \n\n               \n                \n"),LCD_DEF);
+		}
 	}
 	return;
 }
@@ -279,6 +354,7 @@ void task(void)
 /*---------------------------------------------------*/
 /*--    task with functions if USB is enumerated   --*/
 /*---------------------------------------------------*/
+
 void task_with_usb()
 {
 	static uint8_t command[10];
