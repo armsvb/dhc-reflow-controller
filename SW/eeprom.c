@@ -6,13 +6,13 @@
 
 #include "eeprom.h"
 #include "usb.h"
-#include "routines.h"
+#include "routines2.h"
 #include "pid.h"
 
 
 uint8_t EEMEM EEtable[10];
 /* = 
-{{5,30},{5,50},{3,70},{3,82},{0,94}};
+{5,5,3,3,0};
 */
 
 temp_point EEMEM EEtemp[10][8];
@@ -23,6 +23,7 @@ temp_point EEMEM EEtemp[10][8];
  {0x0078,0x0244},{0x0E10,0x0244},{0x0E4C,0x0064}
 };
 */
+
 
 int16_t EEMEM K_I;
 int16_t EEMEM K_P;
@@ -38,7 +39,7 @@ uint16_t EndTime;
 
 void EE_init_table(void)
 {
-	uint8_t pts;
+/*	uint8_t pts;
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
@@ -50,7 +51,7 @@ void EE_init_table(void)
 		return;
 	
 	//initialising temperature table
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)			// remove this, make separate eeprom file programming
 	{
 		eeprom_busy_wait();
 		eeprom_write_byte(&EEtable[0],5);
@@ -138,7 +139,17 @@ void EE_init_table(void)
 		eeprom_write_word(&K_D, 50);
 
 	}
-	
+	*/
+}
+
+uint8_t EE_test_table(uint8_t table)
+{
+	uint8_t points;
+
+	points = eeprom_read_byte((uint8_t*)&(EEtable[table]));
+	if(points == 0xff || points == 0x00)
+		return(0);
+	return(1);
 }
 
 uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
@@ -192,18 +203,6 @@ uint16_t EE_get_temp(uint16_t time, uint8_t table_number)
 		next_temp = eeprom_read_word((uint16_t*)&EEtemp[table_number][point].temp);
 		SR = (int16_t)((((int32_t)next_temp - last_temp)<<7)/(next_time - last_time));
 		point++;
-//test
-/*		if(Status_com & DEBUG)
-		{
-			pprintf_P(PSTR("Setting: "), USB_DEF);
-			printnum(next_time, USB_DEF);
-			usb_putchar('\t');
-			printnum(next_temp>>2, USB_DEF);
-			usb_putchar('\t');
-			printnum(SR, USB_DEF);
-			usb_newline();
-		}
-*/
 	}
 	
 	return((uint16_t)(((int32_t)(time-last_time) * SR)>>7) + last_temp);

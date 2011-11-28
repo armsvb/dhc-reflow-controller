@@ -63,6 +63,7 @@ uint8_t tx_counter;
 
 volatile uint8_t cpt_sof;
 
+FILE USBout = FDEV_SETUP_STREAM(USB_Putchar, NULL, _FDEV_SETUP_WRITE);
 //FILE Usb_str = FDEV_SETUP_STREAM(USB_putchar, NULL, _FDEV_SETUP_WRITE);
 
 // to be removed
@@ -276,7 +277,7 @@ bit usb_tx_ready(void)
 
 //========================================================
 
-int USB_putchar(char data_to_send, FILE *unused)
+int USB_Putchar(char data_to_send, FILE *unused)
 {
 	usb_send_buffer((U8*)&data_to_send, 1);
 	return 0;

@@ -10,10 +10,10 @@
 
 #include "led.h"
 #include "pwm.h"
-#include "routines.h"
+#include "routines2.h"
 #include "encoder.h"
 #include "glcd.h"
-#include "eadogs.h"
+//#include "eadogs.h"
 #include "spi_sw.h"
 #include "usb.h"
 #include "usb/usb_drv.h"

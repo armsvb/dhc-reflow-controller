@@ -81,7 +81,7 @@ OBJDIR = .
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c spi.c max6675.c routines.c encoder.c pid.c eeprom.c usb/start_boot.c usb/wdt_drv.c
+SRC = $(TARGET).c spi.c max6675.c routines2.c encoder.c pid.c eeprom.c usb/start_boot.c usb/wdt_drv.c
 SRC += usb.c usb/usb_drv.c usb/usb_descriptors.c 
 SRC += usb/usb_standard_request.c usb/usb_specific_request.c 
 SRC += glcd.c font.c 
@@ -283,7 +283,7 @@ AVRDUDE_PROGRAMMER = avrisp2
 AVRDUDE_PORT = usb
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex 
-#AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
+AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
 # Uncomment the following if you want avrdude's erase cycle counter.
@@ -314,7 +314,7 @@ AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
 DFU_PROGRAMMER = USB
 
 DFU_WRITE_FLASH = memory flash erase f loadbuffer $(TARGET).hex program 
-#DFU_WRITE_EEPROM = memory eeprom loadbuffer $(TARGET).eep program
+DFU_WRITE_EEPROM = memory eeprom loadbuffer $(TARGET).eep program
 
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,

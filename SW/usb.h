@@ -92,6 +92,8 @@ extern bit   usb_connected;
 extern uint8_t rx_counter;
 extern uint8_t tx_counter;
 
+extern FILE USBout;
+
 
 void USB_Init_hw (void);
 
@@ -105,7 +107,7 @@ uint8_t usb_getchar(void);
 
 bit   usb_tx_ready(void);
 
-int USB_putchar(char, FILE*);
+int USB_Putchar(char, FILE*);
 
 int16_t  usb_putchar(int);
 

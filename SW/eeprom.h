@@ -40,6 +40,8 @@ extern uint16_t EndTime;
 
 void EE_init_table(void);
 
+uint8_t EE_test_table(uint8_t table);
+
 uint16_t EE_get_temp(uint16_t time, uint8_t table_number);
 
 void EE_save_pid(pidData_t *pid_st);

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #include "hw.h"
-#include "routines.h"
+#include "routines2.h"
 #include "eeprom.h"
 
 #ifdef LCD

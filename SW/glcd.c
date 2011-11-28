@@ -1,5 +1,5 @@
 
-//#include <stdio.h>
+#include <stdio.h>
 #include <inttypes.h>
 #include <avr/pgmspace.h>
 
@@ -22,6 +22,8 @@
 //>>>>>>> parent of 40279c3... updated x size of display - need to change it to define in .h
 
 GLCD_POS GLCD_txt_pos;
+
+FILE LCDout = FDEV_SETUP_STREAM(GLCD_Putchar, NULL, _FDEV_SETUP_WRITE);
 
 //FILE glcd_str = FDEV_SETUP_STREAM(glcd_putchar, NULL, _FDEV_SETUP_WRITE);
 
@@ -278,9 +280,9 @@ void GLCD_Clr(void)
 //	GLCD_Putchar(Char, GLCD_FONT);
 //}
 
-void GLCD_Putchar(uint8_t c)
+//void GLCD_Putchar(uint8_t c)
+int GLCD_Putchar(uint8_t c, FILE *unused)
 {
-	uint8_t shift=0;
 	uint8_t z;
 	uint8_t data_char;
 	
@@ -288,18 +290,23 @@ void GLCD_Putchar(uint8_t c)
 	
 	if (c == '\n')
 	{
+		eadogs_setxy(GLCD_txt_pos.X,GLCD_txt_pos.Y);
+		for(z = GLCD_txt_pos.X; z<101; z++)
+			eadogs_data_write(0x00,0);				// clr rest of the line
+		eadogs_data_write(0x00,1);
+
 		GLCD_txt_pos.Y ++;
 		if(GLCD_txt_pos.Y == 8)
 			GLCD_txt_pos.Y = 0;
 		GLCD_txt_pos.X = 0;
 		eadogs_setxy(0,GLCD_txt_pos.Y);
-		return;
+		return(0);
 	}
 	if (c == '\r')
 	{
 		GLCD_txt_pos.X = 0;
 		eadogs_setxy(0,GLCD_txt_pos.Y);
-		return;
+		return(0);
 	}
 
 /* test for carrier return -> automatic wrap?? */
@@ -328,7 +335,7 @@ void GLCD_Putchar(uint8_t c)
 	GLCD_txt_pos.X += 5;				//to save space in conditions
 	if (GLCD_txt_pos.X < 101) 		// Check if this is the last char of the line
 		GLCD_txt_pos.X++;								//update position
-	return;
+	return (0);
 }
 
 //------------------------------------------------------------------------------
