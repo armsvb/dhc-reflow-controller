@@ -160,21 +160,20 @@ void task(void)
 						else
 						{
 							if(PTemp)
-								PTemp--;
+								PTemp -= 4;
 						}
 						break;
 		case KEYRIGHT:	if(!(Status_task & TASK_GO))
 						{
-							if(Table == 9)
+							Table++;
+							if(Table >= 10)
 							{
 								Status_task |= TASK_MAN;
 								Table = 10;
 							}
-							else
-								Table++;
 						}
 						else
-							PTemp++;
+							PTemp += 4;
 						break;
 		case KEYSWITCH:	
 						Status_task |= TASK_SW;
@@ -206,9 +205,9 @@ void task(void)
 		{
 			PCINT1_count = 0;
 
-			if(EE_test_table(Table))
+			if(EE_test_table(Table) || (Status_task & TASK_MAN))		//if table not empty or manual control
 			{
-				LED_PORT = (LED_PORT & _BV(LED0)) ^ _BV(LED0);		//toggle LED0
+				LED_PORT = (LED_PORT & _BV(LED0)) ^ _BV(LED0);			//toggle LED0
 				Time++;
 				eta = 0;
 				if(Status_task & TASK_MAN)
@@ -224,13 +223,13 @@ void task(void)
 					Heat1 = Heat0;
 				}
 				GLCD_Locate(0,3);
-				fprintf_P(&LCDout,PSTR("Preset:%3d.%02d`C\n\nHeater:%3d\%\n"),temp_local>>2,(temp_local & 0x0003)*25, Heat0);
+				fprintf_P(&LCDout,PSTR("Preset:%3d.%02d`C\n\nHeater:%3d%%\n"),temp_local>>2,(temp_local & 0x0003)*25, Heat0);
 				if(eta)
 				{
 					s = eta%60;
 					m = eta/60;
 					h = m/60;
-					fprintf_P(&LCDout, PSTR("ETA   :%2d:%02d:%02d"),h,m,s);
+					fprintf_P(&LCDout, PSTR("ETA   :%02d:%02d:%02d\n"),h,m,s);
 				}
 				if(Is_device_enumerated())
 				{
@@ -306,26 +305,31 @@ void task(void)
 			case 3: line = Drying;
 					break;
 					
-			case 11: line = Manual;
-					num = PTemp>>2;
+			case 10: line = Manual;
 					break;
 			default: line = User;
 					num = Table - 3;
 					break;
 		}
 		if(num)
-			fprintf_P(&LCDout, PSTR("%s %d"), line, num);
+		{
+			fprintf_P(&LCDout, line);
+			fprintf_P(&LCDout, PSTR(" %d"), num);
+		}
 		else
-			fprintf_P(&LCDout, PSTR("%s"), line);
+			fprintf_P(&LCDout, line);
 
 		fprintf_P(&LCDout, PSTR("\n\nTemp  :%3d.%02d`C\n"),Temp1>>2,(Temp1&0x0003)*25);
-		if(EE_test_table(Table) == 0)
+		if (!(Status_task & TASK_GO))
 		{
-			fprintf_P(&LCDout, PSTR("\n Enter data\n in table\n\n"));
-		}
-		else if(!(Status_task & TASK_GO))
-		{
-			fprintf_P(&LCDout, PSTR("\n\n\n\n"));
+			if(!(Status_task & TASK_MAN) && (EE_test_table(Table) == 0))
+			{
+				fprintf_P(&LCDout, PSTR("\n Enter data\n in table\n\n"));
+			}
+			else 
+			{
+				fprintf_P(&LCDout, PSTR("\n\n\n\n"));
+			}
 		}
 	}
 	return;
@@ -394,7 +398,11 @@ void task_with_usb()
 						else
 							line2 = Off;
 
-						fprintf_P(&USBout,PSTR("\r\nTemp1: %3d.%02d\nHeat0: %3d\nTemp. profile: %d\t%s %d\nEcho : %s\n"), Temp1>>2,(Temp1&0x03)*25, Heat0, Table, line, num, line2);
+						fprintf_P(&USBout,PSTR("\r\nTemp1: %3d.%02d\nHeat0: %3d%%\nTemp. profile: %d\t"), Temp1>>2,(Temp1&0x03)*25, Heat0, Table);
+						fprintf_P(&USBout,line);
+						fprintf_P(&USBout,PSTR(" %d\nEcho : "), num);
+						fprintf_P(&USBout,line2);
+						usb_newline();
 						break;
 			case 'a':
 			case 'A':	if(Status_com & DEBUG)
@@ -407,7 +415,9 @@ void task_with_usb()
 							line2 = On;
 							Status_com |= DEBUG;
 						}
-						fprintf_P(&USBout,PSTR("Debug : %s\n"),line2);
+						fprintf_P(&USBout,PSTR("Debug : "),line2);
+						fprintf_P(&USBout,line2);
+						usb_newline();
 						break;
 			case 'b':
 			case 'B': 	//pprintf_P(PSTR("Switching to DFU mode"));
@@ -435,16 +445,18 @@ void task_with_usb()
 							Status_com |= ECHO;
 							line2 = On;
 						}
-						fprintf_P(&USBout, PSTR("Echo : %s\n"),line2);
+						fprintf_P(&USBout, PSTR("Echo : "),line2);
+						fprintf_P(&USBout, line2);
+						usb_newline();
 						break;
 			case 'f':
 			case 'F':	Status_task &= ~TASK_GO;
-						fprintf_P(&USBout,PSTR("STOP"));
+						fprintf_P(&USBout,PSTR("STOP\n"));
 						break;
 			case 'h':
 			case 'H':	if(command[1]==0x0d)
 						{
-							fprintf_P(&USBout,PSTR("Heater %d\%"),Heat0);
+							fprintf_P(&USBout,PSTR("Heater %d%%\n"),Heat0);
 							break;
 						}
 						switch(command[1])
