@@ -121,11 +121,9 @@ void task(void)
 	//		temp0_local = 0;
 			temp1_local = 0;
 			i = 0;
-			LED_PORT = (LED_PORT & _BV(LED2)) ^ _BV(LED2);		//toggle LED2 
 		}
 		SPCR &= ~(_BV(SPE));			//disable SPI 
 	}
-
 
 	if(Is_device_enumerated())
 	{
@@ -188,9 +186,15 @@ void task(void)
 	if(Status_task & TASK_GO)
 	{
 		if(PCINT1_count < Heat0)			//method 1 only
+		{
 			HEAT1_ON;
+			LED2_ON;
+		}
 		else
+		{
 			HEAT1_OFF;
+			LED2_OFF;
+		}
 
 		if(PCINT1_count < Heat1)
 			HEAT2_ON;
@@ -199,6 +203,7 @@ void task(void)
 	
 		if(PCINT1_count >= 100)
 		{
+			LED_PORT = (LED_PORT & _BV(LED0)) ^ _BV(LED0);		//toggle LED0
 			PCINT1_count = 0;
 			Time++;
 			if(Status_task & TASK_MAN)
@@ -278,7 +283,8 @@ void task(void)
 		HEAT2_OFF;
 		Time = 0;
 		EE_get_temp(0,0);
-
+		LED0_ON;
+		LED2_OFF;
 	}
 
 //	if (Status_task & TASK_MENU)
