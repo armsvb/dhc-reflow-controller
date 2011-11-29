@@ -89,7 +89,7 @@ void eadogs_init_glcd(void)
 	eadogs_cmd_write(GLCD_INVERSE,0);				//set inverse off
 	eadogs_cmd_write(GLCD_SET_BIAS,0);
 	eadogs_cmd_write(GLCD_SET_POWER_CTRL | 0x07,0);	// set all on
-	eadogs_cmd_write16(GLCD_SET_ELEC_VOLUME, 0x10,0);	// set LCD contrast (default)
+	eadogs_cmd_write16(GLCD_SET_ELEC_VOLUME, 0x19,0);	// set LCD contrast (default)
 	eadogs_cmd_write16(GLCD_SET_ADV_PGM_CTRL, 0x90,0);	// set TC to -0.11 %/C
 	eadogs_cmd_write(GLCD_ENABLE | 0x01,1);		// display enable
 

@@ -109,7 +109,7 @@ bit   usb_tx_ready(void);
 
 int USB_Putchar(char, FILE*);
 
-int16_t  usb_putchar(int);
+//int16_t  usb_putchar(int);
 
 void  usb_flush(void);
 

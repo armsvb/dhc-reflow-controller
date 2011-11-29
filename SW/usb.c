@@ -279,15 +279,17 @@ bit usb_tx_ready(void)
 
 int USB_Putchar(char data_to_send, FILE *unused)
 {
+	if(data_to_send == '\n')
+		USB_Putchar('\r',unused);
 	usb_send_buffer((U8*)&data_to_send, 1);
 	return 0;
 }
 
-int16_t usb_putchar(int data_to_send)
-{
-   usb_send_buffer((U8*)&data_to_send, 1);
-   return data_to_send;
-}
+//int16_t usb_putchar(int data_to_send)
+//{
+//   usb_send_buffer((U8*)&data_to_send, 1);
+//   return data_to_send;
+//}
 
 //========================================================
 

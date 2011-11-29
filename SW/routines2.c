@@ -152,7 +152,7 @@ void task(void)
 
 	if (Status_task & TASK_MENU)
 	{
-		Menu_simple(encoder);
+//		Menu_simple(encoder);
 	}
 	else
 	{
@@ -349,7 +349,6 @@ void task(void)
 void task_with_usb()
 {
 	static uint8_t command[10];
-	static uint8_t volume = 0x10;
 	uint16_t num;
 	prog_char *line;
 	prog_char *line2;
@@ -374,7 +373,7 @@ void task_with_usb()
 		Status_com &= ~COMMAND;
 		if(Status_com & ECHO)
 		{
-			usb_putchar(command[0]);
+			USB_Putchar(command[0],&USBout);
 		}
 		switch(command[0])
 		{
@@ -461,22 +460,6 @@ void task_with_usb()
 			case 'F':	Status_task &= ~TASK_GO;
 						fprintf_P(&USBout,PSTR("STOP\n"));
 						break;
-			case 'h':
-			case 'H':	if(command[1]==0x0d)
-						{
-							fprintf_P(&USBout,PSTR("Heater %d%%\n"),Heat0);
-							break;
-						}
-						switch(command[1])
-						{
-							case '0':	Heat0 = 10*(command[2]-48) + (command[3]-48);
-//										OCR1B = (uint16_t)Heat0 << 8;	//mode 3
-										break;
-							case '1':	Heat1 = 10*(command[2]-48) + (command[3]-48);
-//										OCR1A = (uint16_t)Heat1 << 8;	//mode 3
-										break;
-							default :	break;
-						}
 			case 'i':
 			case 'I':	if(command[1]==0x0d)
 						{
@@ -484,17 +467,6 @@ void task_with_usb()
 							break;
 						}
 						PidData.I_Factor = 100*(command[1]-48) + 10*(command[2]-48) + (command[3]-48);
-						break;
-			case 'l':
-						if(command[1]==0x0d)
-						{
-							fprintf_P(&USBout, PSTR("Contrast: %d\n"),volume);
-							break;
-						}
-						volume = 10*(command[1]-48) + (command[2]-48);
-						if (volume > 63)
-							volume = 63;
-						eadogs_cmd_write16(GLCD_SET_ELEC_VOLUME, volume, 1);
 						break;
 			case 'm':
 			case 'M':	if(Status_task & TASK_MAN)
@@ -587,6 +559,5 @@ void pprintf_P(PGM_P txt_P, uint8_t device)
 
 void usb_newline(void)
 {
-    usb_putchar('\r');
-    usb_putchar('\n');
+    USB_Putchar('\n', &USBout);
 }
