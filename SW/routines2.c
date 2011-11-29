@@ -13,6 +13,7 @@
 #include "usb.h"
 #include "pid.h"
 #include "glcd.h"
+#include "eadogs.h"
 #include "max6675.h"
 #include "encoder.h"
 #include "eeprom.h"
@@ -148,39 +149,47 @@ void task(void)
 //	uint16_t temp_local = 0;
 
 	encoder = Enc_GetKey(0);
-	switch(encoder)
+
+	if (Status_task & TASK_MENU)
 	{
-		case KEYLEFT:	if(!(Status_task & TASK_GO))
-						{
-							if(Table != 0)
-								Table--;
-							if(Status_task & TASK_MAN)
-								Status_task &= ~TASK_MAN;
-						}
-						else
-						{
-							if(PTemp)
-								PTemp -= 4;
-						}
-						break;
-		case KEYRIGHT:	if(!(Status_task & TASK_GO))
-						{
-							Table++;
-							if(Table >= 10)
+		Menu_simple(encoder);
+	}
+	else
+	{
+		switch(encoder)
+		{
+			case KEYLEFT:	if(!(Status_task & TASK_GO))
 							{
-								Status_task |= TASK_MAN;
-								Table = 10;
+								if(Table != 0)
+									Table--;
+								if(Status_task & TASK_MAN)
+									Status_task &= ~TASK_MAN;
 							}
-						}
-						else
-							PTemp += 4;
-						break;
-		case KEYSWITCH:	
-						Status_task |= TASK_SW;
-						break;
-		case KEYSTOP:	
-						Status_task &= ~TASK_GO;
-		default:		break;
+							else
+							{
+								if(PTemp)
+									PTemp -= 4;
+							}
+							break;
+			case KEYRIGHT:	if(!(Status_task & TASK_GO))
+							{
+								Table++;
+								if(Table >= 10)
+								{
+									Status_task |= TASK_MAN;
+									Table = 10;
+								}
+							}
+							else
+								PTemp += 4;
+							break;
+			case KEYSWITCH:	
+							Status_task |= TASK_SW;
+							break;
+			case KEYSTOP:	
+							Status_task &= ~TASK_GO;
+			default:		break;
+		}
 	}
 
 	if(Status_task & TASK_GO)
@@ -255,8 +264,6 @@ void task(void)
 		LED2_OFF;
 	}
 
-//	if (Status_task & TASK_MENU)
-//		Menu_simple(encoder);
 	
 	if(encoder == KEYSWITCH)
 	{
@@ -342,6 +349,7 @@ void task(void)
 void task_with_usb()
 {
 	static uint8_t command[10];
+	static uint8_t volume = 0x10;
 	uint16_t num;
 	prog_char *line;
 	prog_char *line2;
@@ -476,6 +484,17 @@ void task_with_usb()
 							break;
 						}
 						PidData.I_Factor = 100*(command[1]-48) + 10*(command[2]-48) + (command[3]-48);
+						break;
+			case 'l':
+						if(command[1]==0x0d)
+						{
+							fprintf_P(&USBout, PSTR("Contrast: %d\n"),volume);
+							break;
+						}
+						volume = 10*(command[1]-48) + (command[2]-48);
+						if (volume > 63)
+							volume = 63;
+						eadogs_cmd_write16(GLCD_SET_ELEC_VOLUME, volume, 1);
 						break;
 			case 'm':
 			case 'M':	if(Status_task & TASK_MAN)

@@ -142,45 +142,11 @@ void Menu_simple(int8_t enc_data)
 
 	if(Status_task & TASK_MENUSTART)			// if changed
 	{
-#ifdef LCD
-	lcd_clr();
-	lcd_setxy(0,0);
-	printf_P(PSTR("MENU\n"));
+	GLCD_clr();
+	GLCD_Locate(0,0);
+	fprintf_P(&LCDout,PSTR("MENU\n"));
 	settings_old = (*settings);
 	pom = settings_old;
-#endif
-		if(Status_com & DEBUG)
-		{
-			pprintf_P(PSTR("\r\n M E N U :\n"),USB_DEF);
-//			pprintf_P(PSTR(PROFILES,USB_DEF);
-			pprintf_P(row1,USB_DEF);
-			if(number)
-			{
-				printnum(number1,USB_DEF);
-				pprintf_P(EMPTY,USB_DEF);
-			}
-			else
-				pprintf_P(EMPTY,USB_DEF);
-			pprintf_P(row2,USB_DEF);
-			if(number)
-			{
-				printnum(number2,USB_DEF);
-				pprintf_P(star2,USB_DEF);
-				pprintf_P(TIME,USB_DEF);
-				printnum(number2b,USB_DEF);
-				pprintf_P(EMPTY,USB_DEF);
-			}			
-			pprintf_P(row3,USB_DEF);
-			if(number)
-			{
-				pprintf_P(star2,USB_DEF);
-				pprintf_P(TIME,USB_DEF);
-				printnum(number2b,USB_DEF);
-				pprintf_P(EMPTY,USB_DEF);
-			}			
-			pprintf_P(row4,USB_DEF);
-			pprintf_P(BOTT_ROW,USB_DEF);
-		}
 	}
 	
 	
